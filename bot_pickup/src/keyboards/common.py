@@ -4,7 +4,7 @@
 переиспользуемые кнопки и единые callback-данные, чтобы навигация была консистентной.
 """
 
-from aiogram.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from src.texts import ru
@@ -24,6 +24,13 @@ def btn_back(target: str = CB_BACK) -> InlineKeyboardButton:
 
 def btn_cart() -> InlineKeyboardButton:
     return InlineKeyboardButton(text=ru.BTN_CART, callback_data=CB_CART)
+
+
+def kb_to_menu() -> InlineKeyboardMarkup:
+    """Одна кнопка «В меню» — чтобы экран после заказа не был тупиком (конституция §7)."""
+    b = InlineKeyboardBuilder()
+    b.row(btn_home())
+    return b.as_markup()
 
 
 def with_nav(

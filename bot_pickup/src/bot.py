@@ -11,7 +11,9 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.base import BaseStorage
 from aiogram.fsm.storage.redis import RedisStorage
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.config import Settings, get_settings
 from src.db.engine import make_engine
@@ -42,8 +44,8 @@ def build_sinks(settings: Settings, bot: Bot) -> list[OrderSink]:
 
 
 def build_dispatcher(
-    sessionmaker,
-    storage,
+    sessionmaker: async_sessionmaker[AsyncSession],
+    storage: BaseStorage,
     menu_source: MenuSource,
     order_sinks: list[OrderSink],
     staff_chat_id: int,

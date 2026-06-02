@@ -88,3 +88,6 @@ BTN_CANCEL = "Отмена"
 STATUS_SET = "Статус: {label}"
 STATUS_OUTDATED = "Статус уже обновлён."
 ORDER_NOT_FOUND = "Заказ не найден."
+
+# Индикатор тяжёлой операции (конституция §8)
+ORDER_PROCESSING = "Оформляю заказ…"

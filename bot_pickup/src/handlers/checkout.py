@@ -14,8 +14,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.cart.cart import Cart, format_cart
 from src.db.repositories import ClientRepo
-from src.handlers.common import get_cart, render, save_cart
+from src.handlers.common import edit_message, get_cart, render, save_cart
 from src.keyboards.cart import CheckoutCB, ConfirmCB, kb_cart, kb_confirm
+from src.keyboards.common import kb_to_menu
 from src.menu.sources.base import MenuSource
 from src.orders.service import OrderService, StopError, dispatch_order
 from src.orders.sinks.base import OrderSink
@@ -56,17 +57,22 @@ async def confirm(
         await render(cb, ru.NEED_START)
         return
 
+    # Тяжёлая операция (запись заказа + перепроверка стопа + доставка на кухню, конституция §8):
+    # гасим спиннер, показываем индикатор, убираем кнопку «Подтвердить» (и от двойного нажатия).
+    await cb.answer()
+    await edit_message(cb, ru.ORDER_PROCESSING)
+
     service = OrderService(session, menu_source)
     try:
         order = await service.create_order(client, cart)
     except StopError as exc:
         menu = await menu_source.get_menu(force_refresh=True)
         text = f"{ru.STOP_ITEM.format(title=exc.item_title)}\n\n{format_cart(menu, cart)}"
-        await render(cb, text, kb_cart(cart))
+        await edit_message(cb, text, kb_cart(cart))
         return
 
     await save_cart(state, Cart())
     await state.update_data(cfg=None)
     await state.set_state(OrderFlow.browsing)
     await dispatch_order(order, order_sinks)
-    await render(cb, ru.ORDER_DONE.format(number=order.order_number))
+    await edit_message(cb, ru.ORDER_DONE.format(number=order.order_number), kb_to_menu())
