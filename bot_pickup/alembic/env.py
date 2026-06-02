@@ -1,8 +1,8 @@
 """Async Alembic environment.
 
 URL берётся из переменной окружения DATABASE_URL (postgresql+asyncpg://...), не из ini —
-чтобы миграции не зависели от секретов бота. target_metadata будет привязан к Base.metadata
-в T008/T009 (когда появятся ORM-модели); до тех пор autogenerate не используется.
+чтобы миграции не зависели от секретов бота. target_metadata привязан к Base.metadata
+(autogenerate доступен).
 """
 
 import asyncio
@@ -13,6 +13,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
+from src.db.models import Base
 
 config = context.config
 
@@ -24,8 +25,7 @@ _db_url = os.environ.get("DATABASE_URL")
 if _db_url:
     config.set_main_option("sqlalchemy.url", _db_url)
 
-# TODO(T008/T009): from src.db.models import Base; target_metadata = Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:

@@ -1,6 +1,5 @@
 # bot + postgres + redis. Требует .env (см. .env.example) в этой же папке.
-# Фаза 0: сервис bot собирается, читает .env, прогоняет миграции (no-op) и держится живым.
-# В T014 команда bot заменится на боевой запуск (см. Dockerfile CMD).
+# Сервис bot: миграции на старте (entrypoint) + бот в long-polling (Dockerfile CMD).
 
 services:
   postgres:
@@ -33,10 +32,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    # Фаза 0: проверяем сборку + чтение конфига, затем держим контейнер живым.
-    # Exec-форма (без sh) — чтобы не зависеть от переносов строк на хосте.
-    # T014 уберёт это переопределение и оставит Dockerfile CMD (python -m src.bot).
-    command: ["python", "-c", "from src.config import get_settings; get_settings(); print('[bot] scaffold up, config OK', flush=True); import time; time.sleep(31536000)"]
+    # Запуск бота — из Dockerfile CMD (python -m src.bot).
+    # Нужен реальный BOT_TOKEN в .env, иначе бот не подключится к Telegram.
 
 volumes:
   pgdata:

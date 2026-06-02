@@ -37,25 +37,27 @@ Telegram-чате (бэкап, FR-15).
 
 ## Фаза 1 — Foundational (блокирующее общее; до любой пользовательской истории)
 
-- [ ] T007 [P1] Async-движок и фабрика сессий SQLAlchemy (file: `bot_pickup/src/db/engine.py`,
+- [x] T007 [P1] Async-движок и фабрика сессий SQLAlchemy (file: `bot_pickup/src/db/engine.py`,
   `bot_pickup/src/db/session.py`)
-- [ ] T008 [P1] ORM-модели: `clients`, `orders`, `order_items`, `order_status_history`,
+- [x] T008 [P1] ORM-модели: `clients`, `orders`, `order_items`, `order_status_history`,
   `daily_counter`, `print_jobs` (plan §4; деньги в копейках, `comment` пока не заводим) (file:
   `bot_pickup/src/db/models.py`)
-- [ ] T009 [P1] Начальная миграция Alembic по моделям (file: `bot_pickup/alembic/versions/0001_init.py`)
-- [ ] T010 [P1] Репозитории (clients/orders/items/history/counter) — тонкий слой доступа (file:
+- [x] T009 [P1] Начальная миграция Alembic по моделям (file: `bot_pickup/alembic/versions/0001_init.py`)
+- [x] T010 [P1] Репозитории (clients/orders/items/history/counter) — тонкий слой доступа (file:
   `bot_pickup/src/db/repositories.py`)
-- [ ] T011 [P1] Модуль текстов, нейтральный тон, ru (FR-13) (file: `bot_pickup/src/texts/ru.py`)
-- [ ] T012 [P1] Базовые клавиатуры навигации: «назад», «в начало», «корзина» — единый стиль,
+- [x] T011 [P1] Модуль текстов, нейтральный тон, ru (FR-13) (file: `bot_pickup/src/texts/ru.py`)
+- [x] T012 [P1] Базовые клавиатуры навигации: «назад», «в начало», «корзина» — единый стиль,
   без тупиков (FR-13, конституция §7) (file: `bot_pickup/src/keyboards/common.py`)
-- [ ] T013 [P1] FSM-состояния: `Registration`, `Browsing`, `ItemConfig`, `Cart`, `Checkout`
+- [x] T013 [P1] FSM-состояния: `Registration`, `Browsing`, `ItemConfig`, `Cart`, `Checkout`
   (file: `bot_pickup/src/states/order.py`)
-- [ ] T014 [P1] Точка входа: Dispatcher + `RedisStorage` (FSM наружу процесса), регистрация роутеров,
+- [x] T014 [P1] Точка входа: Dispatcher + `RedisStorage` (FSM наружу процесса), регистрация роутеров,
   startup/shutdown; dev — long-polling (file: `bot_pickup/src/bot.py`)
-- [ ] T015 [P1] Протокол `OrderSink` + результат `SinkResult` (file: `bot_pickup/src/orders/sinks/base.py`)
-- [ ] T016 [P1] Протокол `PaymentProvider` + заглушка `NoPaymentProvider` (MVP без оплаты) (file:
+- [x] T015 [P1] Протокол `OrderSink` + результат `SinkResult` (file: `bot_pickup/src/orders/sinks/base.py`)
+- [x] T016 [P1] Протокол `PaymentProvider` + заглушка `NoPaymentProvider` (MVP без оплаты) (file:
   `bot_pickup/src/payments/base.py`, `bot_pickup/src/payments/none.py`)
 - [ ] CHECKPOINT: бот стартует на long-polling, отвечает на `/start`, состояние FSM переживает рестарт.
+  *(Код готов; БД-слой и миграция 0001 проверены на реальном Postgres, диспетчер собирается, ruff чисто.
+  Запуск с живым `BOT_TOKEN` — у себя: впиши токен в `.env`, затем `docker compose up --build`.)*
 
 ---
 
@@ -79,8 +81,9 @@ Telegram-чате (бэкап, FR-15).
 ## История A — Приём заказа (ядро)  ·  US-A1…A5  ·  v0-core (US-A4 — P2)
 > FR-2, FR-3, FR-5, FR-6, FR-7, FR-16.
 
-- [ ] T022 [P1] Регистрация: при первом обращении спросить **имя один раз**, сохранить в `clients`,
+- [x] T022 [P1] Регистрация: при первом обращении спросить **имя один раз**, сохранить в `clients`,
   далее подставлять; адрес/офис не спрашиваем (US-A3, FR-5) (file: `bot_pickup/src/handlers/start.py`)
+  *(сделано в Фазе 1 вместе с T014 — чекпойнт фазы требует рабочего `/start`)*
 - [ ] T023 [P1] Логика корзины: добавить/изменить количество/удалить, **расчёт суммы с учётом опций**
   (дельты), хранение в Redis/FSM (US-A1/A2, FR-2/FR-3) (file: `bot_pickup/src/cart/cart.py`)
 - [ ] T024 [P1] Хендлер выбора опций позиции (`ItemConfig`): группы `temp`/`alt_milk`/`syrup`/
