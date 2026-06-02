@@ -29,7 +29,8 @@ theplace/
 
 ## Текущий статус
 
-- **bot_pickup:** есть `spec.md`, `research.md`, `plan.md`. Дальше — `tasks.md`.
+- **bot_pickup:** есть `spec.md`, `research.md`, `plan.md`, `tasks.md`. Дальше — Implement (по одной
+  задаче, начиная с T001).
 
 ## Принципы (кратко, полностью — в `constitution.md`)
 
