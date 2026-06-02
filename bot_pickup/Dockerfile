@@ -8,7 +8,10 @@ WORKDIR /app
 
 # Зависимости и проект ставятся из pyproject (точные пины там).
 COPY . /app
+# Нормализуем переносы строк в entrypoint (на случай checkout с CRLF на Windows),
+# иначе шебанг ломается: env: 'sh\r': No such file or directory.
 RUN pip install --no-cache-dir . \
+    && sed -i 's/\r$//' docker-entrypoint.sh \
     && chmod +x docker-entrypoint.sh
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]

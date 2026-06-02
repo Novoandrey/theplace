@@ -1,0 +1,10 @@
+# Репозиторий разворачивается на Linux / в Docker — текст храним и выкладываем с LF.
+# Это предотвращает поломку шебанга .sh при checkout на Windows (core.autocrlf).
+* text=auto eol=lf
+
+# Бинарники не трогаем.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.whl binary
+*.pdf binary

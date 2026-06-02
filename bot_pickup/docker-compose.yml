@@ -33,15 +33,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    # Фаза 0: проверяем сборку + чтение конфига и держим контейнер живым.
+    # Фаза 0: проверяем сборку + чтение конфига, затем держим контейнер живым.
+    # Exec-форма (без sh) — чтобы не зависеть от переносов строк на хосте.
     # T014 уберёт это переопределение и оставит Dockerfile CMD (python -m src.bot).
-    command:
-      - sh
-      - -c
-      - |
-        python -c "from src.config import get_settings; get_settings(); print('[bot] scaffold up, config OK')"
-        echo "[bot] ожидание (заглушка Фазы 0; боевой запуск — T014)"
-        tail -f /dev/null
+    command: ["python", "-c", "from src.config import get_settings; get_settings(); print('[bot] scaffold up, config OK', flush=True); import time; time.sleep(31536000)"]
 
 volumes:
   pgdata:
