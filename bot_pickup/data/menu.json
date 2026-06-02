@@ -1,0 +1,141 @@
+{
+  "_note": "РЕАЛЬНОЕ МЕНЮ The Place, расшифровано с двух фото (КУХНЯ + НАПИТКИ) на 2026-06-02. Это рабочий источник на время v0 (локальное зеркало); канонический источник правды — Quick Resto и его БД, на него перейдём позже (авто-синхронизация из warehouse.nomenclature.dish) — адаптер маппит номенклатуру в этот же формат, сценарии бота не меняются. Решения по моделированию: (1) объём напитков задан отдельными позициями (как в меню: 'Капучино маленький'/'побольше'), а не опцией размера; (2) альтернативное молоко (+100) и сироп (+20) из раздела 'Можем добавить' напитков смоделированы как опции к напиткам — это естественнее для заказа, чем отдельные позиции; (3) кухонный раздел 'Можем добавить' оставлен отдельной категорией позиций-добавок (как напечатано в меню); (4) выбор 'Матча/Ходзича' и 'Эспрессо/Матча-тоник' и стиль яиц вынесены в опции. Доступность всех позиций выставлена true (стоп-лист в фото не указан). Цены — в рублях, как в меню.",
+  "version": "1.0",
+  "source": "The Place — фото меню (КУХНЯ, НАПИТКИ)",
+  "currency": "RUB",
+  "price_units": "rubles",
+  "categories": [
+    { "id": "breakfast", "title": "Завтраки", "sort": 1 },
+    { "id": "waffles", "title": "Вафли", "sort": 2 },
+    { "id": "sandwiches", "title": "Сэндвичи и бургеры", "sort": 3 },
+    { "id": "hot", "title": "Горячее", "sort": 4 },
+    { "id": "snacks", "title": "Закуски", "sort": 5 },
+    { "id": "coffee_classic", "title": "Кофе — Классика", "sort": 6 },
+    { "id": "coffee_black", "title": "Чёрный кофе", "sort": 7 },
+    { "id": "coffee_signature", "title": "Авторские напитки", "sort": 8 },
+    { "id": "coffee_cold", "title": "Холодные напитки", "sort": 9 },
+    { "id": "kitchen_addons", "title": "Можем добавить (кухня)", "sort": 10 }
+  ],
+  "option_groups": {
+    "temp": {
+      "title": "Температура",
+      "required": true,
+      "max_choices": 1,
+      "choices": [
+        { "id": "hot", "title": "Горячий", "price_delta": 0 },
+        { "id": "cold", "title": "Холодный", "price_delta": 0 }
+      ]
+    },
+    "alt_milk": {
+      "title": "Молоко",
+      "required": false,
+      "max_choices": 1,
+      "choices": [
+        { "id": "regular", "title": "Обычное", "price_delta": 0 },
+        { "id": "alternative", "title": "Альтернативное", "price_delta": 100 }
+      ]
+    },
+    "syrup": {
+      "title": "Сироп",
+      "required": false,
+      "max_choices": 1,
+      "choices": [
+        { "id": "none", "title": "Без сиропа", "price_delta": 0 },
+        { "id": "salted_caramel", "title": "Солёная карамель", "price_delta": 20 },
+        { "id": "vanilla", "title": "Ваниль", "price_delta": 20 },
+        { "id": "raspberry", "title": "Малина", "price_delta": 20 },
+        { "id": "lavender", "title": "Лаванда", "price_delta": 20 }
+      ]
+    },
+    "matcha_base": {
+      "title": "База",
+      "required": true,
+      "max_choices": 1,
+      "choices": [
+        { "id": "matcha", "title": "Матча", "price_delta": 0 },
+        { "id": "hojicha", "title": "Ходзича", "price_delta": 0 }
+      ]
+    },
+    "tonic_base": {
+      "title": "Основа",
+      "required": true,
+      "max_choices": 1,
+      "choices": [
+        { "id": "espresso", "title": "Эспрессо-тоник", "price_delta": 0 },
+        { "id": "matcha", "title": "Матча-тоник", "price_delta": 0 }
+      ]
+    },
+    "egg_style": {
+      "title": "Яйца",
+      "required": true,
+      "max_choices": 1,
+      "choices": [
+        { "id": "fried", "title": "Глазунья", "price_delta": 0 },
+        { "id": "scrambled", "title": "Скрэмбл", "price_delta": 0 },
+        { "id": "omelet", "title": "Омлет", "price_delta": 0 }
+      ]
+    }
+  },
+  "items": [
+    { "id": "bf_oatmeal", "category": "breakfast", "title": "Овсянка с печёными фруктами", "description": "Крем из варёной сгущёнки", "serving": "300 г", "price": 350, "available": true, "options": [] },
+    { "id": "bf_rice", "category": "breakfast", "title": "Рисовая каша с киви", "description": "Масло из лемонграсса", "serving": "290 г", "price": 350, "available": true, "options": [] },
+    { "id": "bf_syrniki_lime", "category": "breakfast", "title": "Сырники с муссом из лайма", "description": "", "serving": "190 г", "price": 350, "available": true, "options": [] },
+    { "id": "bf_syrniki_condensed", "category": "breakfast", "title": "Сырники с кремом из варёной сгущёнки", "description": "", "serving": "190 г", "price": 350, "available": true, "options": [] },
+    { "id": "bf_2eggs", "category": "breakfast", "title": "Завтрак из 2-х яиц", "description": "Романо, розовый томат, крем-чиз с песто, булочка хоккайдо", "serving": "200 г", "price": 390, "available": true, "options": ["egg_style"] },
+    { "id": "bf_big", "category": "breakfast", "title": "Большой завтрак", "description": "2 яйца пашот, бекон, мортаделла, романо + розовый томат + огурец, крем-чиз с песто, булочка хоккайдо", "serving": "320 г", "price": 750, "available": true, "options": [] },
+    { "id": "bf_scramble_brioche", "category": "breakfast", "title": "Скрэмбл на бриоши с красной икрой", "description": "", "serving": "180 г", "price": 720, "available": true, "options": [] },
+
+    { "id": "wf_tuna", "category": "waffles", "title": "Вафли с тунцом и соусом из греческого йогурта", "description": "Огурцы ким-чи, крем из феты, романо, шпинат", "serving": "280 г", "price": 420, "available": true, "options": [] },
+    { "id": "wf_chicken", "category": "waffles", "title": "Вафли с курицей, яйцом пашот и муссом пармезан", "description": "", "serving": "290 г", "price": 450, "available": true, "options": [] },
+    { "id": "wf_beef", "category": "waffles", "title": "Вафли с рваной говядиной-барбекю и коул слоу", "description": "Луковый конфитюр, маринованный лук, соус демигляс", "serving": "290 г", "price": 550, "available": true, "options": [] },
+    { "id": "wf_fruit", "category": "waffles", "title": "Вафли с печёными фруктами и мисо-пломбиром", "description": "Мусс из лайма, солёная карамель", "serving": "300 г", "price": 490, "available": true, "options": [] },
+
+    { "id": "sb_beef", "category": "sandwiches", "title": "Сэндвич с рваной говядиной и луковым конфитюром", "description": "Соус BLT, романо, розовый томат, чеддер", "serving": "320 г", "price": 650, "available": true, "options": [] },
+    { "id": "sb_chicken", "category": "sandwiches", "title": "Сэндвич с курицей и мисо-айоли", "description": "Романо, розовый томат, чеддер", "serving": "300 г", "price": 450, "available": true, "options": [] },
+    { "id": "sb_tuna", "category": "sandwiches", "title": "Сэндвич с тунцом, яйцом и огурцом", "description": "Соус BLT, романо, чеддер", "serving": "290 г", "price": 550, "available": true, "options": [] },
+    { "id": "sb_mortadella", "category": "sandwiches", "title": "Сэндвич с мортаделлой и песто", "description": "Трюфельный крем-чиз, романо, розовый томат, чеддер", "serving": "290 г", "price": 590, "available": true, "options": [] },
+    { "id": "sb_smash", "category": "sandwiches", "title": "Смэш-бургер", "description": "Лук, бургер-соус, огурец маринованный, романо, розовый томат, чеддер, булочка хоккайдо", "serving": "350 г", "price": 750, "available": true, "options": [] },
+    { "id": "sb_smash_truffle", "category": "sandwiches", "title": "Смэш-бургер трюфельный", "description": "Моцарелла, чеддер, руккола, розовый томат, луковый конфитюр, булочка хоккайдо", "serving": "320 г", "price": 780, "available": true, "options": [] },
+
+    { "id": "hot_grecha", "category": "hot", "title": "Греча болоньезе с муссом из пармезана", "description": "", "serving": "300 г", "price": 450, "available": true, "options": [] },
+    { "id": "hot_bulgur", "category": "hot", "title": "Булгур с песто и цыплёнком", "description": "", "serving": "310 г", "price": 450, "available": true, "options": [] },
+    { "id": "hot_orzo", "category": "hot", "title": "Паста орзо с говядиной", "description": "Сливочно-устричный соус, демигляс, пармезан, трюфельное масло", "serving": "250 г", "price": 650, "available": true, "options": [] },
+    { "id": "hot_spaghetti", "category": "hot", "title": "Спагетти с креветками, томатами конкассе и шпинатом", "description": "Кокосовое молоко, чили, имбирь, чеснок, цедра лайма", "serving": "325 г", "price": 650, "available": true, "options": [] },
+
+    { "id": "sn_fries", "category": "snacks", "title": "Картофель фри", "description": "Трюфельный крем-чиз, пармезан", "serving": "145 г", "price": 350, "available": true, "options": [] },
+    { "id": "sn_batat", "category": "snacks", "title": "Батат фри", "description": "Мусс из феты, пармезан", "serving": "140 г", "price": 350, "available": true, "options": [] },
+
+    { "id": "flat_white", "category": "coffee_classic", "title": "Флэт Уайт", "description": "", "serving": "180 мл", "price": 270, "available": true, "options": ["alt_milk", "syrup"] },
+    { "id": "cap_small", "category": "coffee_classic", "title": "Капучино маленький", "description": "", "serving": "180 мл", "price": 270, "available": true, "options": ["alt_milk", "syrup"] },
+    { "id": "cap_big", "category": "coffee_classic", "title": "Капучино побольше", "description": "", "serving": "280 мл", "price": 290, "available": true, "options": ["alt_milk", "syrup"] },
+    { "id": "latte", "category": "coffee_classic", "title": "Латте", "description": "Горячий или холодный", "serving": "280 мл", "price": 300, "available": true, "options": ["temp", "alt_milk", "syrup"] },
+    { "id": "raf", "category": "coffee_classic", "title": "Раф", "description": "", "serving": "280 мл", "price": 350, "available": true, "options": ["alt_milk", "syrup"] },
+    { "id": "matcha_hojicha_latte", "category": "coffee_classic", "title": "Матча / Ходзича латте", "description": "Горячий или холодный", "serving": "280 мл", "price": 400, "available": true, "options": ["matcha_base", "temp", "alt_milk"] },
+    { "id": "hot_chocolate", "category": "coffee_classic", "title": "Горячий шоколад", "description": "", "serving": "280 мл", "price": 400, "available": true, "options": ["alt_milk"] },
+
+    { "id": "espresso", "category": "coffee_black", "title": "Эспрессо", "description": "", "serving": "60 мл", "price": 220, "available": true, "options": [] },
+    { "id": "americano_small", "category": "coffee_black", "title": "Американо маленький", "description": "", "serving": "220 мл", "price": 220, "available": true, "options": [] },
+    { "id": "americano_big", "category": "coffee_black", "title": "Американо побольше", "description": "", "serving": "280 мл", "price": 320, "available": true, "options": [] },
+    { "id": "filter", "category": "coffee_black", "title": "Фильтр", "description": "Заваривается стаканом (на самовывоз — без безлимита)", "serving": "стакан", "price": 320, "available": true, "options": [] },
+
+    { "id": "sig_latte_halva", "category": "coffee_signature", "title": "Латте Халва с солью", "description": "", "serving": "280 мл", "price": 400, "available": true, "options": ["alt_milk"] },
+    { "id": "sig_raf_raspberry", "category": "coffee_signature", "title": "Раф малина-лаванда", "description": "", "serving": "280 мл", "price": 400, "available": true, "options": ["alt_milk"] },
+    { "id": "sig_raf_caramel", "category": "coffee_signature", "title": "Раф Солёная карамель", "description": "", "serving": "280 мл", "price": 400, "available": true, "options": ["alt_milk"] },
+
+    { "id": "cold_filter_cranberry", "category": "coffee_cold", "title": "Фильтр-клюква", "description": "", "serving": "400 мл", "price": 350, "available": true, "options": [] },
+    { "id": "cold_filter_cherry", "category": "coffee_cold", "title": "Фильтр-вишня", "description": "", "serving": "400 мл", "price": 350, "available": true, "options": [] },
+    { "id": "cold_ice_americano", "category": "coffee_cold", "title": "Айс-американо", "description": "", "serving": "400 мл", "price": 250, "available": true, "options": [] },
+    { "id": "cold_tonic", "category": "coffee_cold", "title": "Эспрессо / Матча тоник", "description": "", "serving": "400 мл", "price": 450, "available": true, "options": ["tonic_base"] },
+    { "id": "cold_bumble", "category": "coffee_cold", "title": "Бамбл на красном апельсине", "description": "", "serving": "400 мл", "price": 400, "available": true, "options": [] },
+    { "id": "cold_matcha_strawberry", "category": "coffee_cold", "title": "Матча клубника-кокос", "description": "", "serving": "400 мл", "price": 450, "available": true, "options": ["alt_milk"] },
+
+    { "id": "add_egg", "category": "kitchen_addons", "title": "Яйцо", "description": "", "serving": "1 шт", "price": 50, "available": true, "options": [] },
+    { "id": "add_bacon", "category": "kitchen_addons", "title": "Бекон", "description": "", "serving": "20 г", "price": 100, "available": true, "options": [] },
+    { "id": "add_shrimp", "category": "kitchen_addons", "title": "Креветки", "description": "", "serving": "45 г", "price": 200, "available": true, "options": [] },
+    { "id": "add_chicken", "category": "kitchen_addons", "title": "Курица", "description": "", "serving": "50 г", "price": 200, "available": true, "options": [] },
+    { "id": "add_bun", "category": "kitchen_addons", "title": "Булочка хоккайдо", "description": "", "serving": "40 г", "price": 80, "available": true, "options": [] },
+    { "id": "add_cheddar", "category": "kitchen_addons", "title": "Чеддер", "description": "", "serving": "20 г", "price": 100, "available": true, "options": [] },
+    { "id": "add_tuna_rillette", "category": "kitchen_addons", "title": "Риет из тунца", "description": "", "serving": "40 г", "price": 150, "available": true, "options": [] },
+    { "id": "add_baked_fruit", "category": "kitchen_addons", "title": "Печёные фрукты", "description": "", "serving": "30 г", "price": 100, "available": true, "options": [] }
+  ]
+}
