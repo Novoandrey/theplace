@@ -1,7 +1,8 @@
 """Точка входа бота (plan §3, §12).
 
 Dispatcher + RedisStorage (FSM наружу процесса — переживает рестарт, конституция §3).
-Dev: long-polling без публичного URL. Prod (webhook) — позже.
+Источник меню и список каналов доставки внедряются как workflow-данные диспетчера.
+Dev: long-polling. Prod (webhook) — позже.
 """
 
 from __future__ import annotations
@@ -12,20 +13,41 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 
-from src.config import get_settings
+from src.config import Settings, get_settings
 from src.db.engine import make_engine
 from src.db.session import DbSessionMiddleware, make_sessionmaker
-from src.handlers import start
+from src.handlers import cart, checkout, menu, start
+from src.menu.cache import CachedMenuSource
+from src.menu.sources.base import MenuSource
+from src.menu.sources.json import JsonFileMenuSource
+from src.orders.sinks.base import OrderSink
 
 logger = logging.getLogger(__name__)
 
 
-def build_dispatcher(sessionmaker, storage) -> Dispatcher:
-    """Собирает диспетчер: middleware + роутеры. Вынесено для тестируемости."""
+def build_menu_source(settings: Settings) -> MenuSource:
+    if settings.menu_source == "json":
+        return CachedMenuSource(JsonFileMenuSource(settings.menu_path))
+    # sheet (v0.1) и quickresto (v1) — позже.
+    raise ValueError(f"источник меню '{settings.menu_source}' пока не поддержан")
+
+
+def build_sinks(settings: Settings, bot: Bot) -> list[OrderSink]:
+    # Группа B добавит сюда TelegramStaffChatSink (и v0-print — EscPosPrinterSink).
+    return []
+
+
+def build_dispatcher(
+    sessionmaker, storage, menu_source: MenuSource, order_sinks: list[OrderSink]
+) -> Dispatcher:
     dp = Dispatcher(storage=storage)
+    dp["menu_source"] = menu_source
+    dp["order_sinks"] = order_sinks
     dp.update.middleware(DbSessionMiddleware(sessionmaker))
     dp.include_router(start.router)
-    # Группы A–C добавят сюда: menu, cart, checkout, status, staff.
+    dp.include_router(menu.router)
+    dp.include_router(cart.router)
+    dp.include_router(checkout.router)
     return dp
 
 
@@ -37,7 +59,9 @@ async def main() -> None:
     sessionmaker = make_sessionmaker(engine)
     storage = RedisStorage.from_url(settings.redis_url)
     bot = Bot(token=settings.bot_token)
-    dp = build_dispatcher(sessionmaker, storage)
+    menu_source = build_menu_source(settings)
+    order_sinks = build_sinks(settings, bot)
+    dp = build_dispatcher(sessionmaker, storage, menu_source, order_sinks)
 
     logger.info("bot starting (long-polling)")
     try:
