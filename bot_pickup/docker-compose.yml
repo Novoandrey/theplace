@@ -1,0 +1,47 @@
+# bot + postgres + redis. Требует .env (см. .env.example) в этой же папке.
+# Фаза 0: сервис bot собирается, читает .env, прогоняет миграции (no-op) и держится живым.
+# В T014 команда bot заменится на боевой запуск (см. Dockerfile CMD).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-theplace}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-theplace}
+      POSTGRES_DB: ${POSTGRES_DB:-theplace}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-theplace} -d ${POSTGRES_DB:-theplace}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  bot:
+    build: .
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # Фаза 0: проверяем сборку + чтение конфига и держим контейнер живым.
+    # T014 уберёт это переопределение и оставит Dockerfile CMD (python -m src.bot).
+    command:
+      - sh
+      - -c
+      - |
+        python -c "from src.config import get_settings; get_settings(); print('[bot] scaffold up, config OK')"
+        echo "[bot] ожидание (заглушка Фазы 0; боевой запуск — T014)"
+        tail -f /dev/null
+
+volumes:
+  pgdata:

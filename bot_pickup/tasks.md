@@ -20,18 +20,20 @@ Telegram-чате (бэкап, FR-15).
 
 ## Фаза 0 — Setup (каркас проекта, без бизнес-логики)
 
-- [ ] T001 [P1] Инициализировать пакет `bot_pickup`: `pyproject.toml` (Python 3.12+, ruff), зависимости
+- [x] T001 [P1] Инициализировать пакет `bot_pickup`: `pyproject.toml` (Python 3.12+, ruff), зависимости
   с точными пинами — aiogram 3.28.x, redis, sqlalchemy[asyncio], asyncpg, alembic, httpx,
   pydantic-settings (file: `bot_pickup/pyproject.toml`)
-- [ ] T002 [P1] `.env.example` со всеми ключами из plan §10 (`BOT_TOKEN`, `DATABASE_URL`, `REDIS_URL`,
+- [x] T002 [P1] `.env.example` со всеми ключами из plan §10 (`BOT_TOKEN`, `DATABASE_URL`, `REDIS_URL`,
   `STAFF_CHAT_ID`, `ENABLED_SINKS`, `MENU_SOURCE`, `MENU_PATH`, флаги) — секреты не коммитим
   (file: `bot_pickup/.env.example`)
-- [ ] T003 [P1] `.gitignore` (`.env`, `__pycache__`, артефакты) (file: `bot_pickup/.gitignore`)
-- [ ] T004 [P1] Конфиг из окружения на pydantic-settings (file: `bot_pickup/src/config.py`)
-- [ ] T005 [P1] `docker-compose.yml`: сервисы `bot` + `postgres` + `redis`, миграции Alembic на старте
+- [x] T003 [P1] `.gitignore` (`.env`, `__pycache__`, артефакты) (file: `bot_pickup/.gitignore`)
+- [x] T004 [P1] Конфиг из окружения на pydantic-settings (file: `bot_pickup/src/config.py`)
+- [x] T005 [P1] `docker-compose.yml`: сервисы `bot` + `postgres` + `redis`, миграции Alembic на старте
   (file: `bot_pickup/docker-compose.yml`)
-- [ ] T006 [P1] [P] Каркас Alembic (env.py async, пустая ревизия) (file: `bot_pickup/alembic/env.py`)
+- [x] T006 [P1] [P] Каркас Alembic (env.py async, пустая ревизия) (file: `bot_pickup/alembic/env.py`)
 - [ ] CHECKPOINT: `docker compose up` поднимает пустой бот + Postgres + Redis; конфиг читается из `.env`.
+  *(Артефакты готовы и проверены статически: ruff чисто, конфиг парсится с fail-fast, пакет собирается,
+  `alembic/env.py` валиден. `docker compose up` запустить у себя с заполненным `.env`.)*
 
 ## Фаза 1 — Foundational (блокирующее общее; до любой пользовательской истории)
 

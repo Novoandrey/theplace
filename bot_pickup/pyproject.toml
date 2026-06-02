@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "theplace-bot-pickup"
+version = "0.0.0"
+description = "The Place — бот приёма заказов на самовывоз (Pilot 2)"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram==3.28.2",
+    "SQLAlchemy[asyncio]==2.0.50",
+    "asyncpg==0.31.0",
+    "alembic==1.18.4",
+    "httpx==0.28.1",
+    "pydantic-settings==2.14.1",
+    "redis==8.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff==0.15.15",
+    "pytest==9.0.3",
+    "pytest-asyncio==1.4.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
