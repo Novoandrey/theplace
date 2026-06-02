@@ -86,9 +86,24 @@ class OrderService:
 
 
 async def dispatch_order(order: Order, sinks: list[OrderSink]) -> None:
-    """Фан-аут заказа по включённым каналам доставки. Падение одного канала не валит остальные."""
+    """Фан-аут заказа по включённым каналам доставки. Падение одного канала не валит остальные.
+
+    `send()` сам ловит сетевые ошибки и возвращает `SinkResult(ok=False)`; здесь это
+    инспектируем и логируем — иначе провал доставки на кухню был бы не виден.
+    """
+    if not sinks:
+        logger.warning("order %s: нет включённых каналов доставки (sinks пуст)", order.order_number)
+        return
     for sink in sinks:
+        name = getattr(sink, "name", sink.__class__.__name__)
         try:
-            await sink.send(order)
+            result = await sink.send(order)
         except Exception:
-            logger.exception("sink %s failed for order %s", getattr(sink, "name", sink), order.id)
+            logger.exception("sink %s упал на заказе %s", name, order.order_number)
+            continue
+        if result.ok:
+            logger.info("sink %s доставил заказ %s", name, order.order_number)
+        else:
+            logger.warning(
+                "sink %s не доставил заказ %s: %s", name, order.order_number, result.detail
+            )

@@ -75,6 +75,11 @@ async def main() -> None:
     order_sinks = build_sinks(settings, bot)
     dp = build_dispatcher(sessionmaker, storage, menu_source, order_sinks, settings.staff_chat_id)
 
+    logger.info(
+        "order sinks: %s; staff_chat_id=%s",
+        [getattr(s, "name", type(s).__name__) for s in order_sinks] or "нет",
+        settings.staff_chat_id,
+    )
     logger.info("bot starting (long-polling)")
     try:
         await bot.delete_webhook(drop_pending_updates=True)
