@@ -80,7 +80,8 @@ Quick Resto и его БД; в v0 меню берём из локального 
   в v0** — в spec нет драйвера, заводим в later/P3), `created_at`, `updated_at`.
 - **order_items** — `id`, `order_id` (fk), `menu_item_id` (строковый id из меню),
   `title_snapshot`, `unit_price_kopecks_snapshot`, `qty`, `options_snapshot` (jsonb: выбранные
-  опции + дельты), `line_total_kopecks`.
+  опции + дельты), `addons_snapshot` (jsonb, nullable: приложенные допы — id/название/кол-во/цена,
+  FR-18), `line_total_kopecks`.
 - **order_status_history** — `id`, `order_id` (fk), `status`, `at`, `actor` (staff tg_id / `system`),
   `note` (nullable). *Аудит смены статусов (FR-11).*
 - **print_jobs** *(только для ESC/POS-пути)* — `id`, `order_id` (fk), `payload` (text),
@@ -100,9 +101,16 @@ Pydantic-модели, повторяющие схему `data/menu.json` (ко�
 
 - `OptionChoice { id, title, price_delta_kopecks }`
 - `OptionGroup { id, title, required, max_choices, choices: [OptionChoice] }`
-- `MenuItem { id, category, title, description, serving, price_kopecks, available, options: [group_id] }`
+- `MenuItem { id, category, title, description, serving, price_kopecks, available, options: [group_id], addons: [item_id] }`
 - `Category { id, title, sort }`
-- `Menu { currency, categories, option_groups: dict[group_id → OptionGroup], items }`
+- `Menu { currency, categories, option_groups: dict[group_id → OptionGroup], items, addon_category, addon_offer_categories }`
+
+**Допы (FR-18).** Доп — обычная позиция (в категории `addon_category`, напр. `kitchen_addons`),
+поэтому продаётся и самостоятельно. Какие допы предлагать к позиции: явный `MenuItem.addons`
+(список id) переопределяет; иначе — весь пул допов, если категория позиции входит в
+`addon_offer_categories` (для v0 — все «еды», без напитков). В JSON блок `addons`:
+`{ "category": "...", "offer_to_categories": [...] }`. Доп в строке корзины — `{addon_item_id: qty}`;
+цена строки = (цена позиции + дельты опций + Σ цена допа × кол-во) × кол-во строки.
 
 **Соответствие `menu.json` ↔ модель (важно для загрузчика).** `option_groups` в JSON — это
 **словарь, ключ = id группы** (сам объект группы поля `id` не содержит); `JsonFileMenuSource`

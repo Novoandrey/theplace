@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.cart.cart import (
     Cart,
+    addons_snapshot,
     cart_total_kopecks,
     line_total_kopecks,
     line_unit_kopecks,
@@ -51,6 +52,10 @@ class OrderService:
             item = menu.item(line.item_id)
             if item is None or not item.available:
                 raise StopError(item.title if item is not None else line.item_id)
+            for aid in line.addons:
+                addon = menu.item(aid)
+                if addon is None or not addon.available:
+                    raise StopError(addon.title if addon is not None else aid)
 
         number = await next_order_number(self.session)
         order = Order(
@@ -70,6 +75,7 @@ class OrderService:
                     unit_price_kopecks_snapshot=line_unit_kopecks(menu, line),
                     qty=line.qty,
                     options_snapshot=options_snapshot(menu, line) or None,
+                    addons_snapshot=addons_snapshot(menu, line) or None,
                     line_total_kopecks=line_total_kopecks(menu, line),
                 )
             )

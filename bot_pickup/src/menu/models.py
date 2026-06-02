@@ -38,6 +38,7 @@ class MenuItem(BaseModel):
     price_kopecks: int
     available: bool = True
     options: list[str] = Field(default_factory=list)  # id групп опций
+    addons: list[str] = Field(default_factory=list)  # явный список id допов (переопределяет дефолт)
 
 
 class Menu(BaseModel):
@@ -45,6 +46,9 @@ class Menu(BaseModel):
     categories: list[Category] = Field(default_factory=list)
     option_groups: dict[str, OptionGroup] = Field(default_factory=dict)
     items: list[MenuItem] = Field(default_factory=list)
+    # Допы (FR-18): категория с позициями-допами и категории, которым их предлагаем по умолчанию.
+    addon_category: str | None = None
+    addon_offer_categories: list[str] = Field(default_factory=list)
 
     def categories_sorted(self) -> list[Category]:
         return sorted(self.categories, key=lambda c: c.sort)
@@ -61,3 +65,17 @@ class Menu(BaseModel):
 
     def group(self, group_id: str) -> OptionGroup | None:
         return self.option_groups.get(group_id)
+
+    def addon_items(self) -> list[MenuItem]:
+        """Все доступные позиции-допы (категория `addon_category`)."""
+        if not self.addon_category:
+            return []
+        return [it for it in self.items if it.category == self.addon_category and it.available]
+
+    def addons_for(self, item: MenuItem) -> list[MenuItem]:
+        """Какие допы предложить к позиции: явный `item.addons` или дефолтный пул по категории."""
+        if item.addons:
+            return [a for a in (self.item(a) for a in item.addons) if a is not None and a.available]
+        if item.category in self.addon_offer_categories:
+            return [a for a in self.addon_items() if a.id != item.id]
+        return []

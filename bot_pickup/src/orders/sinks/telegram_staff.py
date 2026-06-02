@@ -29,6 +29,13 @@ def _format_options(snapshot: list[dict] | None) -> str:
     return f" ({', '.join(titles)})" if titles else ""
 
 
+def _format_addons(snapshot: list[dict] | None) -> str:
+    if not snapshot:
+        return ""
+    parts = [o["title"] if o.get("qty", 1) == 1 else f"{o['title']} ×{o['qty']}" for o in snapshot]
+    return f" + {', '.join(parts)}" if parts else ""
+
+
 def format_staff_ticket(order: Order, *, with_status: bool = True) -> str:
     head = f"Заказ {order.order_number}"
     if with_status:
@@ -36,8 +43,10 @@ def format_staff_ticket(order: Order, *, with_status: bool = True) -> str:
     rows = [head, ru.STAFF_NAME.format(name=order.client.name), ""]
     for i, it in enumerate(order.items, 1):
         opts = _format_options(it.options_snapshot)
+        addons = _format_addons(it.addons_snapshot)
         rows.append(
-            f"{i}. {it.title_snapshot}{opts} × {it.qty} — {format_kopecks(it.line_total_kopecks)}"
+            f"{i}. {it.title_snapshot}{opts}{addons} × {it.qty} "
+            f"— {format_kopecks(it.line_total_kopecks)}"
         )
     rows.append("")
     rows.append(ru.CART_TOTAL.format(total=format_kopecks(order.total_kopecks)))

@@ -24,6 +24,7 @@ class CartLine:
     item_id: str
     options: dict[str, str]  # group_id -> choice_id
     qty: int
+    addons: dict[str, int] = field(default_factory=dict)  # addon_item_id -> qty (FR-18)
 
 
 @dataclass
@@ -35,7 +36,13 @@ class Cart:
     def from_state(cls, data: dict | None) -> Cart:
         data = data or {}
         lines = [
-            CartLine(uid=d["uid"], item_id=d["item_id"], options=dict(d["options"]), qty=d["qty"])
+            CartLine(
+                uid=d["uid"],
+                item_id=d["item_id"],
+                options=dict(d["options"]),
+                qty=d["qty"],
+                addons=dict(d.get("addons", {})),
+            )
             for d in data.get("lines", [])
         ]
         default_seq = max((line.uid for line in lines), default=0)
@@ -49,17 +56,26 @@ class Cart:
         return not self.lines
 
     @staticmethod
-    def _sig(item_id: str, options: dict[str, str]) -> tuple:
-        return (item_id, tuple(sorted(options.items())))
+    def _sig(item_id: str, options: dict[str, str], addons: dict[str, int]) -> tuple:
+        return (item_id, tuple(sorted(options.items())), tuple(sorted(addons.items())))
 
-    def add(self, item_id: str, options: dict[str, str], qty: int = 1) -> CartLine:
-        sig = self._sig(item_id, options)
+    def add(
+        self,
+        item_id: str,
+        options: dict[str, str],
+        qty: int = 1,
+        addons: dict[str, int] | None = None,
+    ) -> CartLine:
+        addons = addons or {}
+        sig = self._sig(item_id, options, addons)
         for line in self.lines:
-            if self._sig(line.item_id, line.options) == sig:
+            if self._sig(line.item_id, line.options, line.addons) == sig:
                 line.qty += qty
                 return line
         self.seq += 1
-        line = CartLine(uid=self.seq, item_id=item_id, options=dict(options), qty=qty)
+        line = CartLine(
+            uid=self.seq, item_id=item_id, options=dict(options), qty=qty, addons=dict(addons)
+        )
         self.lines.append(line)
         return line
 
@@ -100,8 +116,20 @@ def unit_kopecks(menu: Menu, item_id: str, options: dict[str, str]) -> int:
     return total
 
 
+def configured_unit_kopecks(
+    menu: Menu, item_id: str, options: dict[str, str], addons: dict[str, int] | None = None
+) -> int:
+    """Цена единицы позиции: база + дельты опций + Σ (цена допа × кол-во)."""
+    total = unit_kopecks(menu, item_id, options)
+    for aid, q in (addons or {}).items():
+        addon = menu.item(aid)
+        if addon is not None and q > 0:
+            total += addon.price_kopecks * q
+    return total
+
+
 def line_unit_kopecks(menu: Menu, line: CartLine) -> int:
-    return unit_kopecks(menu, line.item_id, line.options)
+    return configured_unit_kopecks(menu, line.item_id, line.options, line.addons)
 
 
 def line_total_kopecks(menu: Menu, line: CartLine) -> int:
@@ -123,7 +151,37 @@ def line_title(menu: Menu, line: CartLine) -> str:
         choice = next((c for c in group.choices if c.id == cid), None) if group else None
         if choice is not None:
             extras.append(choice.title)
-    return f"{title} ({', '.join(extras)})" if extras else title
+    base = f"{title} ({', '.join(extras)})" if extras else title
+    return base + format_addons_inline(menu, line.addons)
+
+
+def format_addons_inline(menu: Menu, addons: dict[str, int]) -> str:
+    """' + Бекон, Яйцо ×2' для названия строки/билета; '' если допов нет."""
+    parts: list[str] = []
+    for aid, q in addons.items():
+        addon = menu.item(aid)
+        if addon is None or q <= 0:
+            continue
+        parts.append(addon.title if q == 1 else f"{addon.title} ×{q}")
+    return f" + {', '.join(parts)}" if parts else ""
+
+
+def addons_snapshot(menu: Menu, line: CartLine) -> list[dict]:
+    snap: list[dict] = []
+    for aid, q in line.addons.items():
+        addon = menu.item(aid)
+        if addon is None or q <= 0:
+            continue
+        snap.append(
+            {
+                "item_id": aid,
+                "title": addon.title,
+                "qty": q,
+                "unit_price_kopecks": addon.price_kopecks,
+                "total_kopecks": addon.price_kopecks * q,
+            }
+        )
+    return snap
 
 
 def options_snapshot(menu: Menu, line: CartLine) -> list[dict]:

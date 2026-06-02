@@ -54,12 +54,16 @@ class JsonFileMenuSource:
                 price_kopecks=_rub_to_kopecks(it["price"]),
                 available=it.get("available", True),
                 options=it.get("options", []),
+                addons=it.get("addons", []),
             )
             for it in raw.get("items", [])
         ]
+        addons_cfg = raw.get("addons", {})
         return Menu(
             currency=raw.get("currency", "RUB"),
             categories=categories,
             option_groups=groups,
             items=items,
+            addon_category=addons_cfg.get("category"),
+            addon_offer_categories=addons_cfg.get("offer_to_categories", []),
         )

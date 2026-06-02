@@ -159,6 +159,30 @@ Telegram-чате (бэкап, FR-15).
   конституция §7) (file: `bot_pickup/src/handlers/status.py`, `bot_pickup/src/db/repositories.py`)
 - [ ] CHECKPOINT (US-E1): клиент видит прошлые заказы и повторяет один в пару нажатий.
 
+## История F — Допы (add-ons)  ·  FR-18  ·  v0-core
+> Доп — настоящая позиция: продаётся самостоятельно (уже работает, категория «Можем добавить»)
+> и прикладывается к блюду с количеством. Отличается от варианта-опции (модификатор, отдельно не продаётся).
+
+- [x] T063 [P1] Модель: `MenuItem.addons: [item_id]`; на `Menu` — `addon_category`,
+  `addon_offer_categories`; хелперы `addon_items()`, `addons_for(item)` (file:
+  `bot_pickup/src/menu/models.py`)
+- [x] T064 [P1] Загрузчик: парсинг блока `addons` (`category` + `offer_to_categories`) и поля
+  `addons` у позиций; блок `addons` в `data/menu.json` (file: `bot_pickup/src/menu/sources/json.py`,
+  `bot_pickup/data/menu.json`)
+- [x] T065 [P1] Корзина: `CartLine.addons: {item_id: qty}`; учёт в сигнатуре слияния; цена строки =
+  (цена + дельты опций + Σ допы) × кол-во; снапшот допов; отображение допов в названии строки (file:
+  `bot_pickup/src/cart/cart.py`)
+- [x] T066 [P1] БД: колонка `order_items.addons_snapshot` (jsonb, nullable) + миграция; запись допов
+  в `create_order`; перепроверка стопа и для допов (FR-16/18) (file: `bot_pickup/src/db/models.py`,
+  `bot_pickup/alembic/versions/*`, `bot_pickup/src/orders/service.py`)
+- [x] T067 [P1] UX: степперы допов в карточке позиции (если допы предложены); карточка открывается
+  и для позиции без опций, но с допами; допы под блюдом в билете кухни (file:
+  `bot_pickup/src/keyboards/menu.py`, `bot_pickup/src/handlers/menu.py`,
+  `bot_pickup/src/orders/sinks/telegram_staff.py`)
+- [x] T068 [P1] [P] Юнит-тесты: цена строки с допами и кол-вом >1; слияние с разными допами;
+  стоп-перепроверка по допу (file: `bot_pickup/tests/test_addons.py`)
+- [x] CHECKPOINT (FR-18) — проверено на живом PG (завтрак+бекон+2×яйцо=1900₽ ×порции; бекон отдельной строкой; снапшот допов в order_items.addons_snapshot; билет кухни показывает допы под блюдом; стоп по допу отклоняет заказ; миграция 0002 обратима; UX в Telegram — на машине Andrey): доп можно взять отдельной позицией и приложить к блюду (с кол-вом); сумма и билет кухни учитывают допы.
+
 ---
 
 ## Полировка и нефункц. (перед демо v0-core)
@@ -244,6 +268,7 @@ Telegram-чате (бэкап, FR-15).
 | FR-15 печать на кухне + не теряется + бэкап-чат | T032 (бэкап), T037–T040 |
 | FR-16 перепроверка стопа, заказ не создаётся | T019, T029 |
 | FR-17 (later) отмена части + рефанд | T056 |
+| FR-18 допы: отдельно + к блюду | T063–T068 |
 
 **Статус Analyze:** каждое FR закрыто ≥1 задачей; каждое архитектурное решение plan (aiogram+FSM/Redis,
 Postgres+SQLAlchemy+Alembic, адаптеры `MenuSource`/`OrderSink`, нумерация, статусы, заглушка оплаты,

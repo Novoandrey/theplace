@@ -97,6 +97,8 @@ class OrderItem(Base):
     qty: Mapped[int] = mapped_column(Integer)
     # Выбранные опции + дельты на момент заказа.
     options_snapshot: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    # Приложенные допы на момент заказа (id/название/кол-во/цена), FR-18.
+    addons_snapshot: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
     line_total_kopecks: Mapped[int] = mapped_column(Integer)
 
     order: Mapped[Order] = relationship(back_populates="items")

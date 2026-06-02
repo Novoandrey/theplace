@@ -62,19 +62,21 @@ async def open_item(
         await cb.answer(ru.ITEM_GONE, show_alert=True)
         await _show_category(cb, menu_source, state, item.category if item else "")
         return
-    if item.options:
+    if item.options or menu.addons_for(item):
         defaults = {
             gid: menu.group(gid).choices[0].id
             for gid in item.options
             if menu.group(gid) and menu.group(gid).choices
         }
         await state.set_state(OrderFlow.item_config)
-        await state.update_data(cfg={"item_id": item.id, "options": defaults})
+        await state.update_data(cfg={"item_id": item.id, "options": defaults, "addons": {}})
         await render(
-            cb, kb.item_card_text(menu, item, defaults), kb.kb_item_card(menu, item, defaults)
+            cb,
+            kb.item_card_text(menu, item, defaults, {}),
+            kb.kb_item_card(menu, item, defaults, {}),
         )
     else:
-        await render(cb, kb.item_card_text(menu, item, {}), kb.kb_item_card(menu, item, {}))
+        await render(cb, kb.item_card_text(menu, item, {}, {}), kb.kb_item_card(menu, item, {}, {}))
 
 
 @router.callback_query(kb.OptPickCB.filter())
@@ -95,8 +97,38 @@ async def pick_option(
         return
     await render(
         cb,
-        kb.item_card_text(menu, item, cfg["options"]),
-        kb.kb_item_card(menu, item, cfg["options"]),
+        kb.item_card_text(menu, item, cfg["options"], cfg.get("addons", {})),
+        kb.kb_item_card(menu, item, cfg["options"], cfg.get("addons", {})),
+    )
+
+
+@router.callback_query(kb.AddonStepCB.filter())
+async def step_addon(
+    cb: CallbackQuery, callback_data: kb.AddonStepCB, menu_source: MenuSource, state: FSMContext
+) -> None:
+    data = await state.get_data()
+    cfg = data.get("cfg")
+    if not cfg:
+        await cb.answer()
+        return
+    addons: dict[str, int] = cfg.get("addons", {})
+    if callback_data.delta:
+        new_qty = addons.get(callback_data.addon, 0) + callback_data.delta
+        if new_qty <= 0:
+            addons.pop(callback_data.addon, None)
+        else:
+            addons[callback_data.addon] = new_qty
+        cfg["addons"] = addons
+        await state.update_data(cfg=cfg)
+    menu = await menu_source.get_menu()
+    item = menu.item(cfg["item_id"])
+    if item is None:
+        await cb.answer()
+        return
+    await render(
+        cb,
+        kb.item_card_text(menu, item, cfg["options"], cfg.get("addons", {})),
+        kb.kb_item_card(menu, item, cfg["options"], cfg.get("addons", {})),
     )
 
 
@@ -129,7 +161,7 @@ async def add_configured(cb: CallbackQuery, menu_source: MenuSource, state: FSMC
         await cb.answer(ru.ITEM_GONE, show_alert=True)
         return
     cart = await get_cart(state)
-    cart.add(item.id, cfg["options"], 1)
+    cart.add(item.id, cfg["options"], qty=1, addons=cfg.get("addons", {}))
     await save_cart(state, cart)
     await state.update_data(cfg=None)
     await cb.answer(ru.ADDED)
