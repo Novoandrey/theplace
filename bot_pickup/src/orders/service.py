@@ -60,6 +60,7 @@ class OrderService:
             status=OrderStatus.new.value,
             total_kopecks=cart_total_kopecks(menu, cart),
         )
+        order.client = client  # чтобы тикет кухни читал имя без отдельного запроса
         for line in cart.lines:
             item = menu.item(line.item_id)
             order.items.append(

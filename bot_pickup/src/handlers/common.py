@@ -24,6 +24,17 @@ async def render(
         await event.answer(text, reply_markup=markup)
 
 
+async def edit_message(
+    cb: CallbackQuery, text: str, markup: InlineKeyboardMarkup | None = None
+) -> None:
+    """Редактирует сообщение callback'а без авто-ответа (ответ шлём отдельно с тостом)."""
+    if cb.message is not None:
+        try:
+            await cb.message.edit_text(text, reply_markup=markup)
+        except TelegramBadRequest:
+            pass
+
+
 async def get_cart(state: FSMContext) -> Cart:
     data = await state.get_data()
     return Cart.from_state(data.get("cart"))

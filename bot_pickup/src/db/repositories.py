@@ -12,6 +12,7 @@ from datetime import date
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.db.models import Client, DailyCounter, Order, OrderStatus, OrderStatusHistory
 
@@ -53,6 +54,15 @@ class OrderRepo:
 
     async def get(self, order_id: uuid.UUID) -> Order | None:
         return await self.session.get(Order, order_id)
+
+    async def get_full(self, order_id: uuid.UUID) -> Order | None:
+        """Заказ с подгруженными позициями и клиентом (для тикета/уведомлений кухни)."""
+        stmt = (
+            select(Order)
+            .where(Order.id == order_id)
+            .options(selectinload(Order.items), selectinload(Order.client))
+        )
+        return await self.session.scalar(stmt)
 
     async def list_for_client(self, client_id: int) -> list[Order]:
         stmt = select(Order).where(Order.client_id == client_id).order_by(Order.created_at.desc())
