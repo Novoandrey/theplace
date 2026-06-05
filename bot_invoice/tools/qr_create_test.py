@@ -68,7 +68,7 @@ def _request(layer, login, password, endpoint, payload=None, query=None, timeout
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.status, r.read().decode("utf-8", "replace")
     except urllib.error.HTTPError as e:
-        return e.code, e.read().decode("utf-8", "replace")[:800]
+        return e.code, e.read().decode("utf-8", "replace")
     except urllib.error.URLError as e:
         return None, f"URLError: {e.reason}"
 
@@ -199,14 +199,25 @@ def cmd_clone(args):
         print("Источник не JSON — не могу клонировать.")
         return
     payload = transform_full(src) if args.full else transform_for_create(src)
+    if getattr(args, "items", 0):
+        payload["invoiceItems"] = payload["invoiceItems"][: args.items]
     if not args.confirm:
         print(f"CLONE из приходной id={args.from_id} (dry-run, ничего не отправлено).")
+        print(f"Позиций в теле: {len(payload['invoiceItems'])}")
         print("Это тело POST /api/update (упрощённая копия, № TEST-API-DELETE):")
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         print("\nДля реального создания добавь --confirm.")
         return
     st, bd = _request(layer, login, password, "update", payload=payload)
-    print(f"POST /api/update (clone из id={args.from_id}): HTTP {st}")
+    print(f"POST /api/update (clone из id={args.from_id}, позиций={len(payload['invoiceItems'])}): HTTP {st}")
+    if st != 200:
+        fn = f"qr_error_{time.strftime('%Y%m%d_%H%M%S')}.html"
+        with open(fn, "w", encoding="utf-8") as f:
+            f.write(bd)
+        print(f"ПОЛНОЕ тело ошибки сохранено: {fn} ({len(bd)} символов). Пришли этот файл.")
+        print("--- первые 3000 символов: ---")
+        print(bd[:3000])
+        return
     print(bd[:1500])
     if st == 200:
         try:
@@ -237,6 +248,8 @@ def main():
     cp.add_argument("--from", dest="from_id", type=int, required=True)
     cp.add_argument("--confirm", action="store_true")
     cp.add_argument("--full", action="store_true")
+    cp.add_argument("--items", type=int, default=0,
+                    help="оставить только первые N позиций (0 = все) — для изоляции NPE")
     args = ap.parse_args()
     if args.cmd == "dry-run":
         cmd_dry_run(args)
