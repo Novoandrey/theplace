@@ -33,6 +33,7 @@ import base64
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -53,16 +54,8 @@ INGREDIENT = (
     "warehouse.nomenclature.singleproduct",
     "ru.edgex.quickresto.modules.warehouse.nomenclature.singleproduct.SingleProduct",
 )
-# Кандидаты формата filters (query-param, JSON-массив) для выборки детей по parentId — перебираем,
-# т.к. точный формат QR публично не описан. Рабочий тот, где parentId детей совпал с запрошенным.
-PARENT_FILTER_CANDIDATES = [
-    '[{"field":"parentId","operator":"=","value":%d}]',
-    '[{"field":"parentId","operator":"EQ","value":%d}]',
-    '[{"field":"parentId","operator":"EQUALS","value":%d}]',
-    '[{"field":"parentId","operator":"=","value":"%d"}]',
-    '[{"property":"parentId","operator":"=","value":%d}]',
-    '[{"field":"parentId","value":%d}]',
-]
+# Класс групп ингредиентов (parentContextClassName при выборке детей через data/select).
+SINGLE_CATEGORY = "ru.edgex.quickresto.modules.warehouse.nomenclature.singleproduct.SingleCategory"
 
 
 def _env():
@@ -102,6 +95,31 @@ def _load(layer, login, password, module, class_name, endpoint="list", extra=Non
         return status, json.loads(body)
     except json.JSONDecodeError:
         return status, None
+
+
+def _select_children(layer, login, password, module, parent_id, parent_class, timeout=30):
+    """GET /platform/data/{module}/select?parentContextId=.. — дети группы (как грузит бэк-офис)."""
+    base = f"https://{layer}.quickresto.ru/platform/data/{module}/select"
+    params = {
+        "parentContextId": parent_id,
+        "parentContextClassName": parent_class,
+        "parentContext_Level": 0,
+        "regTime": int(time.time() * 1000),
+        "businessDayOffsetInMs": 0,
+        "timeZone": 0,
+    }
+    token = base64.b64encode(f"{login}:{password}".encode()).decode()
+    req = urllib.request.Request(
+        f"{base}?{urllib.parse.urlencode(params)}",
+        headers={"Authorization": f"Basic {token}", "Accept": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.status, r.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as e:
+        return e.code, e.read().decode("utf-8", "replace")[:500]
+    except urllib.error.URLError as e:
+        return None, f"URLError: {e.reason}"
 
 
 def _skeleton(obj, depth=0, maxdepth=4):
@@ -226,26 +244,32 @@ def cmd_map(layer, login, password, module, class_name):
 
 def cmd_children(layer, login, password, parent, module, class_name):
     mod = module or INGREDIENT[0]
-    cls = class_name or INGREDIENT[1]
-    print(f"children parentId={parent} ({mod}) — перебор форматов filters:")
-    for tpl in PARENT_FILTER_CANDIDATES:
-        flt = tpl % parent
-        status, data = _load(layer, login, password, mod, cls, extra={"filters": flt})
-        first = data[0] if isinstance(data, list) and data else None
-        pid = first.get("parentId") if isinstance(first, dict) else None
-        n = len(data) if isinstance(data, list) else "—"
-        print(f"\n  filters={flt}")
-        print(f"  HTTP {status}; объектов: {n}; parentId[0]={pid}")
-        if isinstance(data, list) and data and pid == parent:
-            print("  >>> ПОХОЖЕ РАБОТАЕТ (parentId совпал). Примеры:")
-            for it in data[:10]:
-                if isinstance(it, dict):
-                    mu = it.get("measureUnit") if isinstance(it.get("measureUnit"), dict) else {}
-                    print(f"     id={it.get('id')} art={it.get('article')} "
-                          f"unit_id={mu.get('id')} {it.get('name')}")
-            return
-    print("\nНи один формат не сработал (или вернулись корни). Снимем формат filters из DevTools "
-          "(запрос /api/list при заходе в группу) или у поддержки QR.")
+    cat = class_name or SINGLE_CATEGORY
+    status, body = _select_children(layer, login, password, mod, parent, cat)
+    print(f"children parentId={parent} via /platform/data/{mod}/select: HTTP {status}")
+    if status != 200:
+        print(body[:500])
+        return
+    try:
+        data = json.loads(body)
+    except json.JSONDecodeError:
+        print("(ответ не JSON):")
+        print(body[:400])
+        return
+    if isinstance(data, dict):
+        items = data.get("items") or data.get("data") or data.get("rows") or []
+    else:
+        items = data
+    if not isinstance(items, list):
+        print("Структура ответа иная — вот её скелет:")
+        print(json.dumps(_skeleton(data, 0, 4), ensure_ascii=False, indent=2))
+        return
+    print(f"детей: {len(items)}")
+    for it in items[:20]:
+        if isinstance(it, dict):
+            mu = it.get("measureUnit") if isinstance(it.get("measureUnit"), dict) else {}
+            print(f"  id={it.get('id')} art={it.get('article')} "
+                  f"unit_id={mu.get('id')} pid={it.get('parentId')} {it.get('name')}")
 
 
 def main():
@@ -264,7 +288,7 @@ def main():
     smp = sub.add_parser("map", help="id+article+name+unit номенклатуры (для product:{id})")
     smp.add_argument("--module", required=True)
     smp.add_argument("--class", dest="class_name", required=True)
-    sc = sub.add_parser("children", help="дети номенклатуры по parentId (перебор форматов filters)")
+    sc = sub.add_parser("children", help="дети группы номенклатуры по parentId (data/select)")
     sc.add_argument("--parent", type=int, required=True)
     sc.add_argument("--module", default=None)
     sc.add_argument("--class", dest="class_name", default=None)
