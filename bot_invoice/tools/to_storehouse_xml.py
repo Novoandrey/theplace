@@ -2,7 +2,12 @@
 """
 to_storehouse_xml.py — сборка приходной в StoreHouse XML из канонического JSON.
 
-⚠️ ЧЕРНОВИК / ПРЕДПОЛОЖЕНИЕ. Точная схема импорта Quick Resto в открытом виде не найдена.
+DEPRECATED (2026-06-05): формат StoreHouse XML в Quick Resto НЕ поддерживается — кнопка импорта
+устаревшая, путь закрыт (со слов поддержки QR). Доставка приходной переведена на открытое API
+бэк-офиса (путь A, см. ../research.md §4 и tools/qr_api_probe.py). Файл оставлен в истории, из
+конвейера выведен и для генерации больше не используется.
+
+Историческая заметка. Точная схема импорта Quick Resto в открытом виде не найдена.
 Структура здесь — обоснованная догадка по тому, что известно о StoreHouse (документ-заголовок +
 строки содержимого; ключ строки — артикул; исторически кодировка windows-1251). Файл нужно проверить
 ПРОБНЫМ ИМПОРТОМ в тестовую приходную: по реакции QR (принял / какая ошибка / какие поля ждёт) теги,
@@ -79,7 +84,8 @@ def main():
     text = f'<?xml version="1.0" encoding="{a.encoding}"?>\n' + body
     with open(out, "w", encoding=a.encoding, errors="xmlcharrefreplace") as f:
         f.write(text)
-    print("⚠️  ЧЕРНОВИК StoreHouse XML — проверить пробным импортом.")
+    print("DEPRECATED: StoreHouse XML не поддерживается Quick Resto (путь закрыт). "
+          "Доставка приходной — через открытое API (путь A).", file=sys.stderr)
     n_written = len(doc["items"]) - len(skipped)
     print(f"Накладная {doc['document'].get('number', '')}: строк — {n_written}; "
           f"файл — {out} (кодировка {a.encoding}).")
