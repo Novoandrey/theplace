@@ -70,7 +70,15 @@
       "sum_with_vat_kop": 486759,
       "confidence": "high",
       "note": null,
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "23",
+      "qr": {
+        "art": "23",
+        "name": "Фарш говяжий 70/30",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 6.0,
+        "note": null
+      }
     },
     {
       "n": 2,
@@ -90,7 +98,15 @@
       "sum_with_vat_kop": 258956,
       "confidence": "high",
       "note": null,
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "38",
+      "qr": {
+        "art": "38",
+        "name": "Тунец с/с",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 3.4,
+        "note": null
+      }
     },
     {
       "n": 3,
@@ -110,7 +126,15 @@
       "sum_with_vat_kop": 39375,
       "confidence": "high",
       "note": null,
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "94",
+      "qr": {
+        "art": "94",
+        "name": "Мука пшеничная",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 10.0,
+        "note": null
+      }
     },
     {
       "n": 4,
@@ -130,7 +154,15 @@
       "sum_with_vat_kop": 108870,
       "confidence": "high",
       "note": "1 ед = бутылка 250 мл; куплено 2 шт; «упак. 12 шт» — каталожный короб. Масса 0,968 — брутто со стеклом (не нетто). Для прихода: 0,5 кг (лёгкий счёт).",
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "90024",
+      "qr": {
+        "art": "90024",
+        "name": "Масло трюфельное",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.5,
+        "note": "объём→кг: 250 мл×2=0,5 л≈0,5 кг (лёгкий счёт)"
+      }
     },
     {
       "n": 5,
@@ -150,7 +182,15 @@
       "sum_with_vat_kop": 47785,
       "confidence": "high",
       "note": "бренд «Bloster» (подтверждён); строка ОК",
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "90033",
+      "qr": {
+        "art": "90033",
+        "name": "Горчица дижонская",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.0,
+        "note": null
+      }
     },
     {
       "n": 6,
@@ -170,7 +210,15 @@
       "sum_with_vat_kop": 38950,
       "confidence": "med",
       "note": "бренд «Antica Napoli». Столбцы «в одном месте / масса брутто / масса нетто» в накладной недостоверны — НЕ использовать. Для прихода взят вес с этикетки 0,700 кг (подтвердить)",
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "31",
+      "qr": {
+        "art": "31",
+        "name": "Каперсы",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.7,
+        "note": "вес с этикетки 0,700 кг; подтвердить нетто/брутто"
+      }
     },
     {
       "n": 7,
@@ -190,7 +238,15 @@
       "sum_with_vat_kop": 206682,
       "confidence": "high",
       "note": null,
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "83",
+      "qr": {
+        "art": "83",
+        "name": "Майонез",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 9.4,
+        "note": null
+      }
     },
     {
       "n": 8,
@@ -210,7 +266,15 @@
       "sum_with_vat_kop": 153692,
       "confidence": "high",
       "note": null,
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "21",
+      "qr": {
+        "art": "21",
+        "name": "Бекон с/к",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 2.0,
+        "note": null
+      }
     },
     {
       "n": 9,
@@ -230,7 +294,15 @@
       "sum_with_vat_kop": 9079,
       "confidence": "high",
       "note": "подтверждено: код без буквенного префикса",
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "90022",
+      "qr": {
+        "art": "90022",
+        "name": "Сок лимона",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.545,
+        "note": "артикул под вопросом: Сок лимона(90022)? не свежий «Лимон»(41)"
+      }
     },
     {
       "n": 10,
@@ -250,7 +322,15 @@
       "sum_with_vat_kop": 106250,
       "confidence": "high",
       "note": null,
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "90237",
+      "qr": {
+        "art": "90237",
+        "name": "Соус Демиглас",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.0,
+        "note": null
+      }
     },
     {
       "n": 11,
@@ -270,7 +350,15 @@
       "sum_with_vat_kop": 208815,
       "confidence": "high",
       "note": "1 л × 15. Для прихода: 15 кг (15 л = 15 кг — лёгкий счёт, по согласованию; реальная плотность ниже)",
-      "qr_nomenclature_match": null
+      "qr_nomenclature_match": "90017",
+      "qr": {
+        "art": "90017",
+        "name": "Масло подсолнечное",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 15.0,
+        "note": "объём→кг: 1 л×15=15 кг (лёгкий счёт)"
+      }
     }
   ],
   "totals": {

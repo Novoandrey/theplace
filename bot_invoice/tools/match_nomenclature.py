@@ -65,14 +65,21 @@ EK2029_KEYS = {
 
 def _fmt(it): return f"арт {it['art']:>6} · {it['unit']:>2} · вес.ед {it['weight_kg']} · {it['group']} · {it['name']}"
 
+# Порог уверенности нечёткого матча: ниже — «слабо», требует подтверждения/может быть «нет в номенклатуре».
+MATCH_MIN = 4.0
+def classify(score):
+    if score >= 100: return "alias"
+    if score >= MATCH_MIN: return "fuzzy"
+    return "weak"   # вероятно нет в номенклатуре / спорно — спросить человека
+
 def main():
     items = load_nomenclature(); aliases = load_aliases()
     if len(sys.argv) >= 2 and sys.argv[1] == "--self-test":
         for n, keys in EK2029_KEYS.items():
             res = match(keys, items, aliases)
             top = res[0] if res else None
-            print(f"#{n:>2} {('alias' if top and top[0]>=100 else 'fuzzy') if top else 'нет':>5} | "
-                  f"{_fmt(top[1]) if top else '—'}")
+            kind = classify(top[0]) if top else "нет"
+            print(f"#{n:>2} {kind:>5} | {_fmt(top[1]) if top else '—'}")
         return 0
     if len(sys.argv) < 2:
         print('usage: match_nomenclature.py "ключевые слова" | --self-test'); return 2
