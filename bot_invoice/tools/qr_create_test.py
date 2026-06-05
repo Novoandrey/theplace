@@ -136,6 +136,71 @@ def cmd_remove(args):
     print(body[:800])
 
 
+def _ref(obj):
+    """Свести подобъект к минимальной ссылке {className, id} (как ждёт upsert)."""
+    if isinstance(obj, dict) and obj.get("id") is not None:
+        return {"className": obj.get("className"), "id": obj.get("id")}
+    return obj
+
+
+def transform_for_create(src):
+    """Из прочитанной приходной собрать payload для создания тестовой копии (без id/расчётных)."""
+    items = []
+    for it in src.get("invoiceItems") or []:
+        items.append({
+            "className": it.get("className"),
+            "product": _ref(it.get("product")),
+            "measureUnit": _ref(it.get("measureUnit")),
+            "actualAmount": it.get("actualAmount"),
+            "price": it.get("price"),
+            "priceWithVat": it.get("priceWithVat"),
+        })
+    now = _now_iso()
+    return {
+        "className": src.get("className"),
+        "documentNumber": TEST_DOC_NUMBER,
+        "invoiceDate": now,
+        "paymentDate": now,
+        "paid": False,
+        "processed": False,
+        "comment": "API test clone — удалить",
+        "provider": _ref(src.get("provider")),
+        "store": _ref(src.get("store")),
+        "invoiceItems": items,
+    }
+
+
+def cmd_clone(args):
+    layer, login, password = _env()
+    status, body = _request(layer, login, password, "read", query={"objectId": args.from_id})
+    if status != 200:
+        print(f"read id={args.from_id}: HTTP {status}")
+        print(body[:500])
+        return
+    try:
+        src = json.loads(body)
+    except json.JSONDecodeError:
+        print("Источник не JSON — не могу клонировать.")
+        return
+    payload = transform_for_create(src)
+    if not args.confirm:
+        print(f"CLONE из приходной id={args.from_id} (dry-run, ничего не отправлено).")
+        print("Это тело POST /api/update (упрощённая копия, № TEST-API-DELETE):")
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        print("\nДля реального создания добавь --confirm.")
+        return
+    st, bd = _request(layer, login, password, "update", payload=payload)
+    print(f"POST /api/update (clone из id={args.from_id}): HTTP {st}")
+    print(bd[:1500])
+    if st == 200:
+        try:
+            new_id = json.loads(bd).get("id")
+            print(f"\nСоздана тестовая приходная id={new_id}. Удалить:")
+            print(f"    python qr_create_test.py remove --id {new_id} --confirm")
+        except json.JSONDecodeError:
+            print("(ответ не JSON — смотри тело выше)")
+
+
 def main():
     ap = argparse.ArgumentParser(description="тест создания приходной QR (путь A)")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -152,6 +217,9 @@ def main():
     rp = sub.add_parser("remove")
     rp.add_argument("--id", type=int, required=True)
     rp.add_argument("--confirm", action="store_true")
+    cp = sub.add_parser("clone")
+    cp.add_argument("--from", dest="from_id", type=int, required=True)
+    cp.add_argument("--confirm", action="store_true")
     args = ap.parse_args()
     if args.cmd == "dry-run":
         cmd_dry_run(args)
@@ -159,6 +227,8 @@ def main():
         cmd_post(args)
     elif args.cmd == "remove":
         cmd_remove(args)
+    elif args.cmd == "clone":
+        cmd_clone(args)
 
 
 if __name__ == "__main__":
