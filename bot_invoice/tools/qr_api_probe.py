@@ -215,8 +215,10 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("auth", help="проверить авторизацию (чтение номенклатуры)")
     sub.add_parser("invoice", help="список приходных с id")
-    sr = sub.add_parser("read", help="прочитать приходную С ПОДОБЪЕКТАМИ по objectId")
+    sr = sub.add_parser("read", help="read объекта С ПОДОБЪЕКТАМИ по id (по умолчанию приходная)")
     sr.add_argument("--id", dest="object_id", type=int, required=True)
+    sr.add_argument("--module", default=None)
+    sr.add_argument("--class", dest="class_name", default=None)
     sub.add_parser("refs", help="id+названия складов и поставщиков (для payload)")
     sp = sub.add_parser("schema", help="снять форму любого объекта по moduleName/className")
     sp.add_argument("--module", required=True)
@@ -231,7 +233,7 @@ def main():
     elif a.cmd == "invoice":
         cmd_invoice(layer, login, password)
     elif a.cmd == "read":
-        cmd_read(layer, login, password, a.object_id)
+        cmd_read(layer, login, password, a.object_id, a.module, a.class_name)
     elif a.cmd == "refs":
         cmd_refs(layer, login, password)
     elif a.cmd == "schema":
