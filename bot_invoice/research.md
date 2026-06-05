@@ -128,8 +128,12 @@ XML-варианты QR ожидаемо не принял. Генератор `
 - склад-получатель: `store.id = 1` («Склад 1») — единственный;
 - поставщиков 17 (`provider.id` 1..17) — какой = поставщику накладной, мапим через `refs` (имя в `shortName`);
 - внутренних `id` товаров в нашем экспорте номенклатуры НЕТ (только артикул) → тянем карту
-  `article → product.id (+ measureUnit.id)` командой `map` по классу ингредиентов (className виден в
-  `read` → `invoiceItems[].product.className`).
+  `article → product.id (+ measureUnit.id)` командой `map` по классу **ингредиентов**
+  `warehouse.nomenclature.singleproduct` / `…singleproduct.SingleProduct` (плоский список с `article`,
+  `measureUnit`, `id`, `barCode`, `code1C`). В `read` приходной id=136 первая позиция ссылалась на `Dish` —
+  ссылка `product` полиморфна; для наших закупаемых ингредиентов класс `SingleProduct` (его className и
+  пойдёт в payload). Класс `Dish` (`warehouse.nomenclature.dish`) — дерево групп (list отдаёт 4 корня:
+  Технические/Кухня/Бар/BREAKFEST), для плоской карты не годится.
 
 Открытые вопросы (под тест create; до явного «ок» — только read):
 1. Минимальный набор полей строки/шапки для create (что обязательно, что сервер считает сам) — снимаем

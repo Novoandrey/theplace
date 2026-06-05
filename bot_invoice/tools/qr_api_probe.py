@@ -149,17 +149,18 @@ def cmd_invoice(layer, login, password):
           "— read отдаёт объект С ПОДОБЪЕКТАМИ, там и проверим строки.")
 
 
-def cmd_read(layer, login, password, object_id):
-    status, data = _load(layer, login, password, *INCOMING,
+def cmd_read(layer, login, password, object_id, module=None, class_name=None):
+    mod, cls = (module, class_name) if (module and class_name) else INCOMING
+    status, data = _load(layer, login, password, mod, cls,
                          endpoint="read", extra={"objectId": object_id})
-    print(f"read objectId={object_id}: HTTP {status}")
+    print(f"read objectId={object_id} ({mod}): HTTP {status}")
     if status != 200 or not isinstance(data, dict):
         print("Не 200 / не объект — проверьте objectId и права.")
         return
-    print("ПОЛНАЯ форма приходной С ПОДОБЪЕКТАМИ (значения скрыты):")
+    print("ПОЛНАЯ форма С ПОДОБЪЕКТАМИ (значения скрыты, className виден):")
     print(json.dumps(_skeleton(data, 0, 5), ensure_ascii=False, indent=2))
     arrays = [k for k, v in data.items() if isinstance(v, list)]
-    print("\nПоля-массивы (кандидаты в позиции):", arrays or "— нет (значит отдельный объект)")
+    print("\nПоля-массивы (дети/позиции):", arrays or "— нет")
 
 
 def _id_title(item):
