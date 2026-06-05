@@ -136,10 +136,10 @@ def cmd_remove(args):
     print(body[:800])
 
 
-def _ref(obj):
+def _ref(obj, fallback_cn=None):
     """Свести подобъект к минимальной ссылке {className, id} (как ждёт upsert)."""
     if isinstance(obj, dict) and obj.get("id") is not None:
-        return {"className": obj.get("className"), "id": obj.get("id")}
+        return {"className": obj.get("className") or fallback_cn, "id": obj.get("id")}
     return obj
 
 
@@ -164,8 +164,8 @@ def transform_for_create(src):
         "paid": False,
         "processed": False,
         "comment": "API test clone — удалить",
-        "provider": _ref(src.get("provider")),
-        "store": _ref(src.get("store")),
+        "provider": _ref(src.get("provider"), CN_PROVIDER),
+        "store": _ref(src.get("store"), CN_STORE),
         "invoiceItems": items,
     }
 
