@@ -3,9 +3,10 @@
 
 ЗАЧЕМ. StoreHouse XML в QR закрыт (устарел). Доставку приходной делаем через открытое API
 бэк-офиса: generic object-API (Basic Auth, JSON, GET/POST, объект по moduleName/className).
-Объект приходной подтверждён доками QR: warehouse.documents.incoming / IncomingInvoice,
-POST /api/update (upsert). Скрипт помогает снять недостающее (объект ПОЗИЦИЙ приходной,
-id склада/поставщика) и реальную форму объекта. Делает ТОЛЬКО GET — ничего не пишет в QR.
+Объект приходной подтверждён доками QR: warehouse.documents.incoming / IncomingInvoice
+(GET /api/list, GET /api/read?objectId=N — «с подобъектами», POST /api/update — upsert,
+POST /api/remove). Цель скрипта — увидеть, где у приходной ПОЗИЦИИ (строки), и снять id
+склада/поставщика для payload. Делает ТОЛЬКО GET — ничего не пишет в QR.
 
 ГДЕ ЗАПУСКАТЬ. На машине с доступом к {layer}.quickresto.ru (песочница Claude туда не ходит).
 Зависимостей нет — только стандартная библиотека Python 3.
@@ -17,10 +18,11 @@ id склада/поставщика) и реальную форму объек�
 
 PowerShell:
     $env:QR_LAYER="ВАШ_ЛЕЕР"; $env:QR_LOGIN="..."; $env:QR_PASSWORD="..."
-    python qr_api_probe.py auth      # проверить авторизацию
-    python qr_api_probe.py invoice   # прочитать существующую приходную, снять её форму
-    python qr_api_probe.py refs      # id+названия складов и поставщиков (для payload)
-    python qr_api_probe.py schema --module <moduleName> --class <className>   # любой объект
+    python qr_api_probe.py auth                     # проверить авторизацию
+    python qr_api_probe.py invoice                  # список приходных с id (выбрать одну)
+    python qr_api_probe.py read --id <objectId>     # объект С ПОДОБЪЕКТАМИ — увидеть позиции
+    python qr_api_probe.py refs                     # id+названия складов и поставщиков
+    python qr_api_probe.py schema --module M --class C   # любой объект
 
 bash:
     QR_LAYER=... QR_LOGIN=... QR_PASSWORD=... python3 qr_api_probe.py auth
@@ -55,10 +57,13 @@ def _env():
     return os.environ["QR_LAYER"], os.environ["QR_LOGIN"], os.environ["QR_PASSWORD"]
 
 
-def _get(layer, login, password, module, class_name, timeout=30):
-    """GET .../api/list?moduleName=..&className=.. с Basic Auth. Возвращает (status, body)."""
-    base = f"https://{layer}.quickresto.ru/platform/online/api/list"
-    qs = urllib.parse.urlencode({"moduleName": module, "className": class_name})
+def _get(layer, login, password, module, class_name, endpoint="list", extra=None, timeout=30):
+    """GET .../api/{endpoint}?moduleName=..&className=..[&extra] с Basic Auth. -> (status, body)."""
+    base = f"https://{layer}.quickresto.ru/platform/online/api/{endpoint}"
+    params = {"moduleName": module, "className": class_name}
+    if extra:
+        params.update(extra)
+    qs = urllib.parse.urlencode(params)
     token = base64.b64encode(f"{login}:{password}".encode()).decode()
     req = urllib.request.Request(f"{base}?{qs}", headers={
         "Authorization": f"Basic {token}",
@@ -72,6 +77,16 @@ def _get(layer, login, password, module, class_name, timeout=30):
         return e.code, e.read().decode("utf-8", "replace")[:500]
     except urllib.error.URLError as e:
         return None, f"URLError: {e.reason}"
+
+
+def _load(layer, login, password, module, class_name, endpoint="list", extra=None):
+    status, body = _get(layer, login, password, module, class_name, endpoint=endpoint, extra=extra)
+    if status != 200:
+        return status, None
+    try:
+        return status, json.loads(body)
+    except json.JSONDecodeError:
+        return status, None
 
 
 def _skeleton(obj, depth=0, maxdepth=4):
@@ -93,16 +108,6 @@ def _skeleton(obj, depth=0, maxdepth=4):
     return "<null>" if obj is None else f"<{type(obj).__name__}>"
 
 
-def _load(layer, login, password, module, class_name):
-    status, body = _get(layer, login, password, module, class_name)
-    if status != 200:
-        return status, None
-    try:
-        return status, json.loads(body)
-    except json.JSONDecodeError:
-        return status, None
-
-
 def cmd_auth(layer, login, password):
     status, data = _load(layer, login, password, *NOMENCLATURE)
     print(f"auth (чтение номенклатуры): HTTP {status}")
@@ -119,21 +124,35 @@ def cmd_auth(layer, login, password):
 
 def cmd_invoice(layer, login, password):
     status, data = _load(layer, login, password, *INCOMING)
-    print(f"invoice ({INCOMING[0]}): HTTP {status}")
+    print(f"invoice/list ({INCOMING[0]}): HTTP {status}")
     if status != 200 or not isinstance(data, list):
-        print("Не удалось прочитать приходные (см. статус) — проверьте права на чтение.")
+        print("Не удалось прочитать список приходных (см. статус) — проверьте права.")
         return
     print(f"приходных в системе: {len(data)}")
     if not data:
         print("Приходных пока нет — создайте одну в бэк-офисе вручную и повторите.")
         return
-    print("ФОРМА существующей приходной (имена полей и типы, значения скрыты):")
+    print("Существующие приходные (для команды read --id):")
+    for it in data[:15]:
+        if isinstance(it, dict):
+            print(f"  id={it.get('id')}  № {it.get('documentNumber')}")
+    print("\nФорма из list (объекты «плоские», вложенные ссылки пустые):")
     print(json.dumps(_skeleton(data[0]), ensure_ascii=False, indent=2))
-    keys = list(data[0].keys()) if isinstance(data[0], dict) else []
-    line_keys = ("item", "element", "row", "good", "position")
-    line_like = [k for k in keys if any(t in k.lower() for t in line_keys)]
-    note = line_like or "— не видно (значит позиции — отдельный объект)"
-    print("\nПоля, похожие на строки документа:", note)
+    print("\nПозиции в list не приходят. Дальше: python qr_api_probe.py read --id <objectId> "
+          "— read отдаёт объект С ПОДОБЪЕКТАМИ, там и проверим строки.")
+
+
+def cmd_read(layer, login, password, object_id):
+    status, data = _load(layer, login, password, *INCOMING,
+                         endpoint="read", extra={"objectId": object_id})
+    print(f"read objectId={object_id}: HTTP {status}")
+    if status != 200 or not isinstance(data, dict):
+        print("Не 200 / не объект — проверьте objectId и права.")
+        return
+    print("ПОЛНАЯ форма приходной С ПОДОБЪЕКТАМИ (значения скрыты):")
+    print(json.dumps(_skeleton(data, 0, 5), ensure_ascii=False, indent=2))
+    arrays = [k for k, v in data.items() if isinstance(v, list)]
+    print("\nПоля-массивы (кандидаты в позиции):", arrays or "— нет (значит отдельный объект)")
 
 
 def _id_title(item):
@@ -171,7 +190,9 @@ def main():
     ap = argparse.ArgumentParser(description="read-only разведка открытого API QR (путь A)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("auth", help="проверить авторизацию (чтение номенклатуры)")
-    sub.add_parser("invoice", help="прочитать приходную и снять её форму")
+    sub.add_parser("invoice", help="список приходных с id")
+    sr = sub.add_parser("read", help="прочитать приходную С ПОДОБЪЕКТАМИ по objectId")
+    sr.add_argument("--id", dest="object_id", type=int, required=True)
     sub.add_parser("refs", help="id+названия складов и поставщиков (для payload)")
     sp = sub.add_parser("schema", help="снять форму любого объекта по moduleName/className")
     sp.add_argument("--module", required=True)
@@ -182,6 +203,8 @@ def main():
         cmd_auth(layer, login, password)
     elif a.cmd == "invoice":
         cmd_invoice(layer, login, password)
+    elif a.cmd == "read":
+        cmd_read(layer, login, password, a.object_id)
     elif a.cmd == "refs":
         cmd_refs(layer, login, password)
     elif a.cmd == "schema":
