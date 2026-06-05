@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 to_storehouse_xml.py — сборка приходной в StoreHouse XML из канонического JSON.
 
@@ -16,9 +15,13 @@ CLI:
   python3 to_storehouse_xml.py samples/EK-2029_extracted.json --out samples/EK-2029_storehouse.xml
   опции: --encoding windows-1251|utf-8  (по умолчанию windows-1251)
 """
-import json, sys, argparse, os
+import argparse
+import json
+import os
+import sys
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
+
 
 def rub(kop): return f"{kop/100:.2f}"
 
@@ -27,7 +30,9 @@ def build_xml(doc):
     ключ строки = код товара (=артикул QR); ведущая — сумма без НДС; цена расчётная (не шлём);
     № поставщика → «Номер ТТН», внутренний № SH присваивает сам. Имена тегов — всё ещё догадка,
     сделаны самоописательными для лёгкой правки по реакции QR."""
-    d = doc["document"]; sup = doc.get("supplier", {}); tt = doc.get("totals", {})
+    d = doc["document"]
+    sup = doc.get("supplier", {})
+    tt = doc.get("totals", {})
     root = ET.Element("Document", {"type": "приходная накладная"})   # корень/тип — уточнить
     ET.SubElement(root, "Number").text = ""                          # внутренний № — SH присвоит
     ET.SubElement(root, "NumberTTN").text = str(d.get("number", "")) # № накладной поставщика
@@ -41,7 +46,8 @@ def build_xml(doc):
         qr = it.get("qr") or {}
         art = qr.get("art")
         if not art:
-            skipped.append(it["n"]); continue
+            skipped.append(it["n"])
+            continue
         item = ET.SubElement(content, "Item")
         ET.SubElement(item, "GoodCode").text = str(art)              # код товара = ключ
         ET.SubElement(item, "GoodName").text = qr.get("name", it["name"])
@@ -58,7 +64,8 @@ def build_xml(doc):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("json"); ap.add_argument("--out", default=None)
+    ap.add_argument("json")
+    ap.add_argument("--out", default=None)
     ap.add_argument("--encoding", default="windows-1251")
     a = ap.parse_args()
     doc = json.load(open(a.json, encoding="utf-8"))
@@ -72,8 +79,9 @@ def main():
     text = f'<?xml version="1.0" encoding="{a.encoding}"?>\n' + body
     with open(out, "w", encoding=a.encoding, errors="xmlcharrefreplace") as f:
         f.write(text)
-    print(f"⚠️  ЧЕРНОВИК StoreHouse XML — проверить пробным импортом.")
-    print(f"Накладная {doc['document'].get('number','')}: строк — {len(doc['items'])-len(skipped)}; "
+    print("⚠️  ЧЕРНОВИК StoreHouse XML — проверить пробным импортом.")
+    n_written = len(doc["items"]) - len(skipped)
+    print(f"Накладная {doc['document'].get('number', '')}: строк — {n_written}; "
           f"файл — {out} (кодировка {a.encoding}).")
     if skipped:
         print("Без артикула (в файл не попали):", skipped)

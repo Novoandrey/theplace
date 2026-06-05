@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 match_nomenclature.py — сопоставление строки накладной с номенклатурой Quick Resto.
 
@@ -11,7 +10,11 @@ CLI:
   python3 match_nomenclature.py "фарш говяж 70 30"
   python3 match_nomenclature.py --self-test     # прогон по 11 строкам EK-2029
 """
-import json, re, sys, difflib, os
+import difflib
+import json
+import os
+import re
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "..", "data")
@@ -63,17 +66,23 @@ EK2029_KEYS = {
     8: ["бекон"], 9: ["лимон", "концентрат", "сок"], 10: ["демигл"], 11: ["подсолнеч"],
 }
 
-def _fmt(it): return f"арт {it['art']:>6} · {it['unit']:>2} · вес.ед {it['weight_kg']} · {it['group']} · {it['name']}"
+def _fmt(it):
+    return (f"арт {it['art']:>6} · {it['unit']:>2} · вес.ед {it['weight_kg']} · "
+            f"{it['group']} · {it['name']}")
 
-# Порог уверенности нечёткого матча: ниже — «слабо», требует подтверждения/может быть «нет в номенклатуре».
+# Порог уверенности нечёткого матча: ниже — «слабо», требует подтверждения /
+# может быть «нет в номенклатуре» — спросить человека.
 MATCH_MIN = 4.0
 def classify(score):
-    if score >= 100: return "alias"
-    if score >= MATCH_MIN: return "fuzzy"
+    if score >= 100:
+        return "alias"
+    if score >= MATCH_MIN:
+        return "fuzzy"
     return "weak"   # вероятно нет в номенклатуре / спорно — спросить человека
 
 def main():
-    items = load_nomenclature(); aliases = load_aliases()
+    items = load_nomenclature()
+    aliases = load_aliases()
     if len(sys.argv) >= 2 and sys.argv[1] == "--self-test":
         for n, keys in EK2029_KEYS.items():
             res = match(keys, items, aliases)
@@ -82,7 +91,8 @@ def main():
             print(f"#{n:>2} {kind:>5} | {_fmt(top[1]) if top else '—'}")
         return 0
     if len(sys.argv) < 2:
-        print('usage: match_nomenclature.py "ключевые слова" | --self-test'); return 2
+        print('usage: match_nomenclature.py "ключевые слова" | --self-test')
+        return 2
     for sc, it in match(sys.argv[1].split(), items, aliases):
         print(f"[{sc:5.1f}] {_fmt(it)}")
     return 0

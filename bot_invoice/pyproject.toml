@@ -1,0 +1,29 @@
+# Конфиг инструментов для bot_invoice (Pilot 1 — анализатор накладных).
+# v0 — это скилл Claude Chat + код-инструменты в tools/; устанавливаемого пакета пока нет,
+# поэтому [build-system] не задаётся. Таблица нужна для метаданных, зависимостей и настроек
+# ruff/pytest. Рулсет ruff и пины — как в ../bot_pickup/pyproject.toml (единый стиль по репо).
+
+[project]
+name = "theplace-bot-invoice"
+version = "0.0.0"
+description = "The Place — анализатор товарных накладных (Pilot 1)"
+requires-python = ">=3.12"
+dependencies = [
+    "openpyxl==3.1.5",   # рантайм: xlsx-вид файла импорта (to_qr_import.py); csv — stdlib
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff==0.15.15",
+    "pytest==9.0.3",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
