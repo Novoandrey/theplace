@@ -22,7 +22,8 @@ PowerShell:
     python qr_api_probe.py invoice                  # список приходных с id (выбрать одну)
     python qr_api_probe.py read --id <objectId>     # объект С ПОДОБЪЕКТАМИ — увидеть позиции
     python qr_api_probe.py refs                     # id+названия складов и поставщиков
-    python qr_api_probe.py schema --module M --class C   # любой объект
+    python qr_api_probe.py schema --module M --class C   # форма любого объекта
+    python qr_api_probe.py map --module M --class C      # id+article+unit номенклатуры
 
 bash:
     QR_LAYER=... QR_LOGIN=... QR_PASSWORD=... python3 qr_api_probe.py auth
@@ -94,7 +95,13 @@ def _skeleton(obj, depth=0, maxdepth=4):
     if depth >= maxdepth:
         return "<...>"
     if isinstance(obj, dict):
-        return {k: _skeleton(v, depth + 1, maxdepth) for k, v in obj.items()}
+        out = {}
+        for k, v in obj.items():
+            if k == "className" and isinstance(v, str):
+                out[k] = v  # тип объекта (не ПДн) — показываем для маппинга
+            else:
+                out[k] = _skeleton(v, depth + 1, maxdepth)
+        return out
     if isinstance(obj, list):
         return [_skeleton(obj[0], depth + 1, maxdepth)] if obj else []
     if isinstance(obj, bool):
@@ -158,7 +165,8 @@ def cmd_read(layer, login, password, object_id):
 def _id_title(item):
     if not isinstance(item, dict):
         return str(item)
-    name = item.get("title") or item.get("name") or item.get("itemTitle") or "?"
+    name = (item.get("title") or item.get("name") or item.get("shortName")
+            or item.get("itemTitle") or "?")
     return f"id={item.get('id')}  {name}"
 
 
@@ -186,6 +194,21 @@ def cmd_schema(layer, login, password, module, class_name):
         print("Не 200 — проверьте moduleName/className и права.")
 
 
+def cmd_map(layer, login, password, module, class_name):
+    status, data = _load(layer, login, password, module, class_name)
+    n = len(data) if isinstance(data, list) else "—"
+    print(f"map ({module}): HTTP {status}; объектов: {n}")
+    if status != 200 or not isinstance(data, list):
+        print("Не прочитано — проверьте module/class и права.")
+        return
+    for it in data:
+        if not isinstance(it, dict):
+            continue
+        mu = it.get("measureUnit") if isinstance(it.get("measureUnit"), dict) else {}
+        print(f"  id={it.get('id')} art={it.get('article')} "
+              f"unit_id={mu.get('id')}({mu.get('name')}) {it.get('name')}")
+
+
 def main():
     ap = argparse.ArgumentParser(description="read-only разведка открытого API QR (путь A)")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -197,6 +220,9 @@ def main():
     sp = sub.add_parser("schema", help="снять форму любого объекта по moduleName/className")
     sp.add_argument("--module", required=True)
     sp.add_argument("--class", dest="class_name", required=True)
+    smp = sub.add_parser("map", help="id+article+name+unit номенклатуры (для product:{id})")
+    smp.add_argument("--module", required=True)
+    smp.add_argument("--class", dest="class_name", required=True)
     a = ap.parse_args()
     layer, login, password = _env()
     if a.cmd == "auth":
@@ -209,6 +235,8 @@ def main():
         cmd_refs(layer, login, password)
     elif a.cmd == "schema":
         cmd_schema(layer, login, password, a.module, a.class_name)
+    elif a.cmd == "map":
+        cmd_map(layer, login, password, a.module, a.class_name)
 
 
 if __name__ == "__main__":
