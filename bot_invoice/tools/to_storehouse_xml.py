@@ -23,36 +23,33 @@ from xml.dom import minidom
 def rub(kop): return f"{kop/100:.2f}"
 
 def build_xml(doc):
+    """v2 — структура по правилам модели StoreHouse (из доков r_keeper):
+    ключ строки = код товара (=артикул QR); ведущая — сумма без НДС; цена расчётная (не шлём);
+    № поставщика → «Номер ТТН», внутренний № SH присваивает сам. Имена тегов — всё ещё догадка,
+    сделаны самоописательными для лёгкой правки по реакции QR."""
     d = doc["document"]; sup = doc.get("supplier", {}); tt = doc.get("totals", {})
-    root = ET.Element("StoreHouseDocument", {
-        "version": "1",
-        "type": "приходная накладная",   # тип документа — уточнить по образцу
-    })
-    h = ET.SubElement(root, "Header")
-    ET.SubElement(h, "Number").text = str(d.get("number", ""))
-    ET.SubElement(h, "Date").text = str(d.get("date", ""))
-    s = ET.SubElement(h, "Supplier", {"inn": str(sup.get("inn") or "")})
+    root = ET.Element("Document", {"type": "приходная накладная"})   # корень/тип — уточнить
+    ET.SubElement(root, "Number").text = ""                          # внутренний № — SH присвоит
+    ET.SubElement(root, "NumberTTN").text = str(d.get("number", "")) # № накладной поставщика
+    ET.SubElement(root, "Date").text = str(d.get("date", ""))
+    s = ET.SubElement(root, "Supplier", {"inn": str(sup.get("inn") or "")})
     s.text = sup.get("name", "")
-    ET.SubElement(h, "Currency").text = "RUB"
-    goods = ET.SubElement(root, "Goods")
+    ET.SubElement(root, "Receiver").text = ""                        # подразделение-получатель
+    content = ET.SubElement(root, "Content")
     skipped = []
     for it in doc["items"]:
         qr = it.get("qr") or {}
         art = qr.get("art")
         if not art:
             skipped.append(it["n"]); continue
-        qty = qr["qty"]
-        g = ET.SubElement(goods, "Good")
-        ET.SubElement(g, "Article").text = str(art)          # ключ сопоставления (предположение)
-        ET.SubElement(g, "Barcode").text = ""                # на случай, если QR матчит по штрихкоду
-        ET.SubElement(g, "Name").text = qr.get("name", it["name"])
-        ET.SubElement(g, "Unit").text = qr.get("unit", "кг")
-        ET.SubElement(g, "Quantity").text = f"{qty:.3f}"
-        ET.SubElement(g, "PriceWithVAT").text = f"{(it['sum_with_vat_kop']/100)/qty:.2f}"
-        ET.SubElement(g, "SumWithoutVAT").text = rub(it["sum_no_vat_kop"])
-        ET.SubElement(g, "VATRate").text = str(it["vat_rate"])
-        ET.SubElement(g, "VATSum").text = rub(it["vat_sum_kop"])
-        ET.SubElement(g, "SumWithVAT").text = rub(it["sum_with_vat_kop"])
+        item = ET.SubElement(content, "Item")
+        ET.SubElement(item, "GoodCode").text = str(art)              # код товара = ключ
+        ET.SubElement(item, "GoodName").text = qr.get("name", it["name"])
+        ET.SubElement(item, "Unit").text = qr.get("unit", "кг")
+        ET.SubElement(item, "Quantity").text = f"{qr['qty']:.3f}"
+        ET.SubElement(item, "SumWithoutVAT").text = rub(it["sum_no_vat_kop"])  # ведущая
+        ET.SubElement(item, "VATRate").text = str(it["vat_rate"])
+        ET.SubElement(item, "SumWithVAT").text = rub(it["sum_with_vat_kop"])
     tot = ET.SubElement(root, "Totals")
     ET.SubElement(tot, "SumWithoutVAT").text = rub(tt.get("sum_no_vat_kop", 0))
     ET.SubElement(tot, "VATSum").text = rub(tt.get("vat_sum_kop", 0))
