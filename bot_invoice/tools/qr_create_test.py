@@ -170,6 +170,20 @@ def transform_for_create(src):
     }
 
 
+def transform_full(src):
+    """Полная копия как отдал сервер: убираем id документа/позиций и lastUpdateDate."""
+    obj = dict(src)
+    obj.pop("id", None)
+    obj.pop("lastUpdateDate", None)
+    obj["documentNumber"] = TEST_DOC_NUMBER
+    obj["processed"] = False
+    obj["comment"] = "API test full clone — удалить"
+    for it in obj.get("invoiceItems") or []:
+        if isinstance(it, dict):
+            it.pop("id", None)
+    return obj
+
+
 def cmd_clone(args):
     layer, login, password = _env()
     status, body = _request(layer, login, password, "read", query={"objectId": args.from_id})
@@ -182,7 +196,7 @@ def cmd_clone(args):
     except json.JSONDecodeError:
         print("Источник не JSON — не могу клонировать.")
         return
-    payload = transform_for_create(src)
+    payload = transform_full(src) if args.full else transform_for_create(src)
     if not args.confirm:
         print(f"CLONE из приходной id={args.from_id} (dry-run, ничего не отправлено).")
         print("Это тело POST /api/update (упрощённая копия, № TEST-API-DELETE):")
@@ -220,6 +234,7 @@ def main():
     cp = sub.add_parser("clone")
     cp.add_argument("--from", dest="from_id", type=int, required=True)
     cp.add_argument("--confirm", action="store_true")
+    cp.add_argument("--full", action="store_true")
     args = ap.parse_args()
     if args.cmd == "dry-run":
         cmd_dry_run(args)
