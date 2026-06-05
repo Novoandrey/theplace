@@ -160,6 +160,18 @@ payload с `SingleProduct` дал 500/NPE — вероятная причина:
    пробным POST тестовой приходной (`processed=false`), затем `read` назад и `remove`.
 2. Проведение: создать с `processed=false` (черновик на проверку) → провести отдельно/выставить `true`.
 
+**БЛОКЕР ПОДТВЕРЖДЁН (2026-06-05): создание приходной через open API не проходит.** `POST /api/update`
+с корректным payload стабильно даёт HTTP 500 / NPE в `PrimeCostCalculator.setStoreDocumentItemStoreState`
+(`PrimeCostCalculator.java:348`), вызов из `CRUDSupportService.expandMapDependencies` →
+`AbstractItemPersistenceService.updateTransientFields` при чтении позиции назад внутри `updateEntity`
+(в транзакции → откат, ничего не создаётся). NPE НЕ зависит от: null-классов (убраны), класса товара
+(`Dish`/`SingleProduct`), наличия `vat`, флага `processed` (false/true). Read/list/remove существующих
+накладных работают. → серверная сторона; вопрос оформлен в `support_question.md`. Инструмент
+`qr_create_test.py clone` умеет `--items N` / `--processed` / `--no-items` для воспроизведения.
+Карта `артикул→id`: из read накладной 139 (ПН135) получены 13 живых `SingleProduct.id` (артикулы
+6,7,90241,54,5,90100,17,16,19,18,30,37,84 → id 9,10,370,54,7,214,17,16,19,18,31,37,84; unit=2 кг, vat id=4 5%).
+
+
 ## 5. Сопоставление с номенклатурой — ключ = «Артикул» QR
 
 Образец ПН135 показал ключ строки — **Артикул номенклатуры QR** (6, 7, 90241…), а не код поставщика

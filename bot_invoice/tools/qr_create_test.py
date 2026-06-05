@@ -204,7 +204,9 @@ def cmd_clone(args):
         print("Источник не JSON — не могу клонировать.")
         return
     payload = transform_full(src) if args.full else transform_for_create(src, processed=getattr(args, "processed", False))
-    if getattr(args, "items", 0):
+    if getattr(args, "no_items", False):
+        payload["invoiceItems"] = []
+    elif getattr(args, "items", 0):
         payload["invoiceItems"] = payload["invoiceItems"][: args.items]
     if not args.confirm:
         print(f"CLONE из приходной id={args.from_id} (dry-run, ничего не отправлено).")
@@ -257,6 +259,8 @@ def main():
                     help="оставить только первые N позиций (0 = все) — для изоляции NPE")
     cp.add_argument("--processed", action="store_true",
                     help="создать ПРОВЕДЁННОЙ (processed=true) — затрагивает склад! удалить сразу после")
+    cp.add_argument("--no-items", dest="no_items", action="store_true",
+                    help="создать ШАПКУ без позиций (изоляция: проходит ли create без расчёта себестоимости)")
     args = ap.parse_args()
     if args.cmd == "dry-run":
         cmd_dry_run(args)
