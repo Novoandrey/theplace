@@ -145,7 +145,7 @@ def _ref(obj, fallback_cn=None):
     return obj
 
 
-def transform_for_create(src):
+def transform_for_create(src, processed=False):
     """Из прочитанной приходной собрать payload для создания тестовой копии (без id/расчётных)."""
     items = []
     for it in src.get("invoiceItems") or []:
@@ -169,8 +169,8 @@ def transform_for_create(src):
         "invoiceDate": now,
         "paymentDate": now,
         "paid": False,
-        "processed": False,
         "comment": "API test clone — удалить",
+        "processed": processed,
         "provider": _ref(src.get("provider"), CN_PROVIDER),
         "store": _ref(src.get("store"), CN_STORE),
         "invoiceItems": items,
@@ -203,7 +203,7 @@ def cmd_clone(args):
     except json.JSONDecodeError:
         print("Источник не JSON — не могу клонировать.")
         return
-    payload = transform_full(src) if args.full else transform_for_create(src)
+    payload = transform_full(src) if args.full else transform_for_create(src, processed=getattr(args, "processed", False))
     if getattr(args, "items", 0):
         payload["invoiceItems"] = payload["invoiceItems"][: args.items]
     if not args.confirm:
@@ -255,6 +255,8 @@ def main():
     cp.add_argument("--full", action="store_true")
     cp.add_argument("--items", type=int, default=0,
                     help="оставить только первые N позиций (0 = все) — для изоляции NPE")
+    cp.add_argument("--processed", action="store_true",
+                    help="создать ПРОВЕДЁННОЙ (processed=true) — затрагивает склад! удалить сразу после")
     args = ap.parse_args()
     if args.cmd == "dry-run":
         cmd_dry_run(args)
