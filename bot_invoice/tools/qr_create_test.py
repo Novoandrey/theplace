@@ -32,7 +32,7 @@ CN_INVOICE = "ru.edgex.quickresto.modules.warehouse.documents.incoming.IncomingI
 CN_ITEM = "ru.edgex.quickresto.modules.warehouse.documents.items.common.InvoiceItem"
 CN_PRODUCT = "ru.edgex.quickresto.modules.warehouse.nomenclature.singleproduct.SingleProduct"
 CN_UNIT = "ru.edgex.quickresto.modules.core.dictionaries.measureunits.MeasureUnit"
-CN_PROVIDER = "ru.edgex.quickresto.modules.warehouse.providers.Organization"
+CN_PROVIDER = "ru.edgex.quickresto.modules.warehouse.providers.Provider"
 CN_STORE = "ru.edgex.quickresto.modules.warehouse.store.Store"
 
 TEST_DOC_NUMBER = "TEST-API-DELETE"

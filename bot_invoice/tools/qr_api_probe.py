@@ -181,13 +181,24 @@ def cmd_invoice(layer, login, password):
           "— read отдаёт объект С ПОДОБЪЕКТАМИ, там и проверим строки.")
 
 
-def cmd_read(layer, login, password, object_id, module=None, class_name=None):
+def cmd_read(layer, login, password, object_id, module=None, class_name=None,
+             raw=False, out=None):
     mod, cls = (module, class_name) if (module and class_name) else INCOMING
     status, data = _load(layer, login, password, mod, cls,
                          endpoint="read", extra={"objectId": object_id})
     print(f"read objectId={object_id} ({mod}): HTTP {status}")
     if status != 200 or not isinstance(data, dict):
         print("Не 200 / не объект — проверьте objectId и права.")
+        return
+    if raw or out:
+        blob = json.dumps(data, ensure_ascii=False, indent=2)
+        if out:
+            with open(out, "w", encoding="utf-8") as f:
+                f.write(blob)
+            print(f"Сырой JSON сохранён: {out} ({len(blob)} символов)")
+        if raw:
+            print("ПОЛНЫЙ СЫРОЙ JSON (для реконструкции create):")
+            print(blob)
         return
     print("ПОЛНАЯ форма С ПОДОБЪЕКТАМИ (значения скрыты, className виден):")
     print(json.dumps(_skeleton(data, 0, 5), ensure_ascii=False, indent=2))
@@ -281,6 +292,9 @@ def main():
     sr.add_argument("--id", dest="object_id", type=int, required=True)
     sr.add_argument("--module", default=None)
     sr.add_argument("--class", dest="class_name", default=None)
+    sr.add_argument("--raw", action="store_true",
+                    help="печать ПОЛНОГО сырого JSON (значения не скрыты) — для реконструкции create")
+    sr.add_argument("--out", default=None, help="сохранить сырой JSON в файл")
     sub.add_parser("refs", help="id+названия складов и поставщиков (для payload)")
     sp = sub.add_parser("schema", help="снять форму любого объекта по moduleName/className")
     sp.add_argument("--module", required=True)
@@ -299,7 +313,8 @@ def main():
     elif a.cmd == "invoice":
         cmd_invoice(layer, login, password)
     elif a.cmd == "read":
-        cmd_read(layer, login, password, a.object_id, a.module, a.class_name)
+        cmd_read(layer, login, password, a.object_id, a.module, a.class_name,
+                 raw=a.raw, out=a.out)
     elif a.cmd == "refs":
         cmd_refs(layer, login, password)
     elif a.cmd == "schema":
