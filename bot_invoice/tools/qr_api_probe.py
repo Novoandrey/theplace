@@ -49,6 +49,20 @@ INCOMING = (
 # moduleName складов/поставщиков выведен из className (правило пакета); при 404 — уточнить.
 STORE = ("warehouse.store", "ru.edgex.quickresto.modules.warehouse.store.Store")
 PROVIDER = ("warehouse.providers", "ru.edgex.quickresto.modules.warehouse.providers.Provider")
+INGREDIENT = (
+    "warehouse.nomenclature.singleproduct",
+    "ru.edgex.quickresto.modules.warehouse.nomenclature.singleproduct.SingleProduct",
+)
+# Кандидаты формата filters (query-param, JSON-массив) для выборки детей по parentId — перебираем,
+# т.к. точный формат QR публично не описан. Рабочий тот, где parentId детей совпал с запрошенным.
+PARENT_FILTER_CANDIDATES = [
+    '[{"field":"parentId","operator":"=","value":%d}]',
+    '[{"field":"parentId","operator":"EQ","value":%d}]',
+    '[{"field":"parentId","operator":"EQUALS","value":%d}]',
+    '[{"field":"parentId","operator":"=","value":"%d"}]',
+    '[{"property":"parentId","operator":"=","value":%d}]',
+    '[{"field":"parentId","value":%d}]',
+]
 
 
 def _env():
@@ -210,6 +224,30 @@ def cmd_map(layer, login, password, module, class_name):
               f"unit_id={mu.get('id')}({mu.get('name')}) {it.get('name')}")
 
 
+def cmd_children(layer, login, password, parent, module, class_name):
+    mod = module or INGREDIENT[0]
+    cls = class_name or INGREDIENT[1]
+    print(f"children parentId={parent} ({mod}) — перебор форматов filters:")
+    for tpl in PARENT_FILTER_CANDIDATES:
+        flt = tpl % parent
+        status, data = _load(layer, login, password, mod, cls, extra={"filters": flt})
+        first = data[0] if isinstance(data, list) and data else None
+        pid = first.get("parentId") if isinstance(first, dict) else None
+        n = len(data) if isinstance(data, list) else "—"
+        print(f"\n  filters={flt}")
+        print(f"  HTTP {status}; объектов: {n}; parentId[0]={pid}")
+        if isinstance(data, list) and data and pid == parent:
+            print("  >>> ПОХОЖЕ РАБОТАЕТ (parentId совпал). Примеры:")
+            for it in data[:10]:
+                if isinstance(it, dict):
+                    mu = it.get("measureUnit") if isinstance(it.get("measureUnit"), dict) else {}
+                    print(f"     id={it.get('id')} art={it.get('article')} "
+                          f"unit_id={mu.get('id')} {it.get('name')}")
+            return
+    print("\nНи один формат не сработал (или вернулись корни). Снимем формат filters из DevTools "
+          "(запрос /api/list при заходе в группу) или у поддержки QR.")
+
+
 def main():
     ap = argparse.ArgumentParser(description="read-only разведка открытого API QR (путь A)")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -226,6 +264,10 @@ def main():
     smp = sub.add_parser("map", help="id+article+name+unit номенклатуры (для product:{id})")
     smp.add_argument("--module", required=True)
     smp.add_argument("--class", dest="class_name", required=True)
+    sc = sub.add_parser("children", help="дети номенклатуры по parentId (перебор форматов filters)")
+    sc.add_argument("--parent", type=int, required=True)
+    sc.add_argument("--module", default=None)
+    sc.add_argument("--class", dest="class_name", default=None)
     a = ap.parse_args()
     layer, login, password = _env()
     if a.cmd == "auth":
@@ -240,6 +282,8 @@ def main():
         cmd_schema(layer, login, password, a.module, a.class_name)
     elif a.cmd == "map":
         cmd_map(layer, login, password, a.module, a.class_name)
+    elif a.cmd == "children":
+        cmd_children(layer, login, password, a.parent, a.module, a.class_name)
 
 
 if __name__ == "__main__":
