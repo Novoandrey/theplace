@@ -149,14 +149,19 @@ def transform_for_create(src):
     """Из прочитанной приходной собрать payload для создания тестовой копии (без id/расчётных)."""
     items = []
     for it in src.get("invoiceItems") or []:
-        items.append({
+        item = {
             "className": it.get("className"),
             "product": _ref(it.get("product")),
             "measureUnit": _ref(it.get("measureUnit")),
             "actualAmount": it.get("actualAmount"),
             "price": it.get("price"),
             "priceWithVat": it.get("priceWithVat"),
-        })
+        }
+        # vat — небольшой объект {id,value,taxType} без className; переносим как есть
+        # (нужен расчёту себестоимости PrimeCostCalculator; у Dish-позиций его не было).
+        if it.get("vat") is not None:
+            item["vat"] = it["vat"]
+        items.append(item)
     now = _now_iso()
     return {
         "className": src.get("className"),
