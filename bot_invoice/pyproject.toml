@@ -27,7 +27,7 @@ select = ["E", "F", "I", "UP", "B", "ASYNC"]
 
 [tool.ruff.lint.isort]
 # tools/*.py — самостоятельные скрипты; тесты импортируют их по имени модуля
-known-first-party = ["validate_invoice", "match_nomenclature", "to_qr_import", "to_storehouse_xml"]
+known-first-party = ["validate_invoice", "match_nomenclature", "to_qr_import", "qr_api_probe"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -75,10 +75,10 @@
 файл в этих колонках и загрузить в тестовую приходную. Маппинг и пример — `samples/EK-2029_to_QR.md`.
 
 **Уточнение (2026-06-05, итог): StoreHouse XML в Quick Resto НЕ поддерживается — путь закрыт.**
-Со слов поддержки QR, кнопка импорта StoreHouse XML **устаревшая** и не работает; два наших XML-варианта
-(`samples/EK-2029_storehouse{,_utf8}.xml`) QR ожидаемо не принял. Генератор `tools/to_storehouse_xml.py`
-помечен **DEPRECATED** (оставлен в истории, из конвейера выведен). ПН135 (xlsx/csv, `tools/to_qr_import.py`)
-остаётся как **человекочитаемый лист проверки / ручной запас**, а не формат загрузки.
+Со слов поддержки QR, кнопка импорта StoreHouse XML **устаревшая** и не работает; наши пробные
+XML-варианты QR ожидаемо не принял. Генератор `to_storehouse_xml.py` и XML-образцы из репозитория
+**удалены** — мёртвый путь не тащим. ПН135 (xlsx/csv, `tools/to_qr_import.py`) остаётся как
+**человекочитаемый лист проверки / ручной запас**, а не формат загрузки.
 
 **Доставка приходной — открытое API бэк-офиса (путь A, выбран 2026-06-05).** Поддержка QR прислала два
 живых пути ввода накладных, оба в бэк-офисе и **без кассы**:
@@ -100,6 +100,30 @@
 Источники: открытое API — rche.ru (база/метод/объекты), `quickresto.ru/api` (JS, robots); DocsInBox —
 `quickresto.ru/support/.../integratsiya_s_docsinbox/`, `wiki.dxbx.ru` (каналы приёма накладных),
 тарифы `docsinbox.ru/price`.
+
+## 4a. Открытое API — объект приходной накладной (ПОДТВЕРЖДЕНО доками QR, 2026-06-05)
+
+Со скрина страницы `quickresto.ru/api` (прислал Andrey). Объект приходной:
+- **Модуль:** `warehouse.documents.incoming`
+- **Класс:** `ru.edgex.quickresto.modules.warehouse.documents.incoming.IncomingInvoice`
+- **Эндпоинты** (POST, basicAuth, `Content-Type: application/json`): `/api/update` — создать/изменить
+  (upsert: без `id` создаёт, с `id` правит); `/api/remove` — удалить. Ответы: 200 / 400 / 401 (auth).
+- **Поля заголовка** (тело запроса): `documentNumber`* (№), `invoiceDate`* (дата поступления, date-time),
+  `paymentDate`* (дата оплаты), `paid` (bool), `provider`* (объект `…warehouse.providers.Provider`),
+  `store`* (объект `…warehouse.store.Store`, склад-получатель), `transactionAccount` (объект
+  `…finances.tranaccounts.TranAccount`, счёт списания), `comment`, `processed` (bool — проведена ли),
+  `totalSum` (с НДС, ₽), `totalSumWoNds` (без НДС), `totalNds` (НДС), `totalAmount` (суммарное кол-во),
+  `id`, `lastUpdateDate`. (`*` — required.)
+
+**Ключевое: в `IncomingInvoice` нет строк документа** — только шапка и итоги. Позиции (Элементы
+документа: товар, кол-во, цена) — **отдельный объект**, его создаём отдельно (по `id` приходной) либо
+связкой. Открытые вопросы под разведку (`tools/qr_api_probe.py`, read-only):
+1. `moduleName`/`className` объекта **позиции** приходной (искать на той же стр. доков QR, либо прочитать
+   существующую приходную и проверить, приходят ли строки вложенно).
+2. `provider`/`store`/`transactionAccount` в payload передаются ссылкой `{"id": N}` — нужны реальные id
+   склада и поставщика (команда `refs`).
+3. Порядок: создать шапку → добавить позиции → `processed=true` (провести) — уточнить, проводит ли API
+   или нужно отдельным вызовом/вручную.
 
 ## 5. Сопоставление с номенклатурой — ключ = «Артикул» QR
 
