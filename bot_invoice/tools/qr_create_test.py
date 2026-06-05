@@ -3,7 +3,7 @@
 
 ЗАЧЕМ. Подтвердить, что POST /api/update принимает создание приходной (IncomingInvoice) с вложенными
 позициями invoiceItems, какие поля обязательны, и формат ссылок product/measureUnit/provider/store.
-Товар по умолчанию — Dish id=309 (unit_id=4, валидная позиция из накладной 136), склад id=1, поставщик — флаг --provider-id.
+Товар по умолчанию — «Вода» id=194 (unit_id=2), склад id=1, поставщик — флаг --provider-id.
 
 БЕЗОПАСНОСТЬ.
 - По умолчанию dry-run: печатает JSON payload и URL, НИЧЕГО не отправляет.
@@ -30,11 +30,9 @@ import urllib.request
 MODULE = "warehouse.documents.incoming"
 CN_INVOICE = "ru.edgex.quickresto.modules.warehouse.documents.incoming.IncomingInvoice"
 CN_ITEM = "ru.edgex.quickresto.modules.warehouse.documents.items.common.InvoiceItem"
-# Подтверждено сырым read id=136: товар в приходной ссылается классом Dish (не SingleProduct),
-# поставщик — Organization (не Provider). Эти значения сервер отдаёт в живом объекте.
-CN_PRODUCT = "ru.edgex.quickresto.modules.warehouse.nomenclature.dish.Dish"
+CN_PRODUCT = "ru.edgex.quickresto.modules.warehouse.nomenclature.singleproduct.SingleProduct"
 CN_UNIT = "ru.edgex.quickresto.modules.core.dictionaries.measureunits.MeasureUnit"
-CN_PROVIDER = "ru.edgex.quickresto.modules.warehouse.providers.Organization"
+CN_PROVIDER = "ru.edgex.quickresto.modules.warehouse.providers.Provider"
 CN_STORE = "ru.edgex.quickresto.modules.warehouse.store.Store"
 
 TEST_DOC_NUMBER = "TEST-API-DELETE"
@@ -224,8 +222,8 @@ def main():
         sp = sub.add_parser(name)
         sp.add_argument("--provider-id", type=int, default=0)
         sp.add_argument("--store-id", type=int, default=1)
-        sp.add_argument("--product-id", type=int, default=309)
-        sp.add_argument("--unit-id", type=int, default=4)
+        sp.add_argument("--product-id", type=int, default=194)
+        sp.add_argument("--unit-id", type=int, default=2)
         sp.add_argument("--qty", type=float, default=1.0)
         sp.add_argument("--price", type=float, default=10.0)
         if name == "post":
