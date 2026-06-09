@@ -289,7 +289,9 @@ def cmd_tree(layer, login, password, module, out=None, map_out=None):
     qs = urllib.parse.urlencode({"moduleName": module})
     token = base64.b64encode(f"{login}:{password}".encode()).decode()
     req = urllib.request.Request(f"{base}?{qs}", headers={
-        "Authorization": f"Basic {token}", "Accept": "application/json"})
+        "Authorization": f"Basic {token}",
+        "Content-Type": "application/json",
+        "Accept": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             status, body = r.status, r.read().decode("utf-8", "replace")
