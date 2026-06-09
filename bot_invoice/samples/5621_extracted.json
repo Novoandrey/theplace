@@ -1,0 +1,526 @@
+{
+  "schema_version": "0.1",
+  "money_unit": "kopeck",
+  "currency": "RUB",
+  "source": {
+    "files": [
+      "1781005862076_image.png",
+      "1781005878789_image.png"
+    ],
+    "doc_type": "УПД",
+    "status": "1"
+  },
+  "document": {
+    "number": "5621",
+    "date": "2026-06-06",
+    "basis": "Договор поставки № 54/24 от 24.09.2024"
+  },
+  "supplier": {
+    "name": "ИП Калинин Сергей Владимирович",
+    "inn": "660108142622",
+    "provider_id": 2,
+    "provider_class": "businessman"
+  },
+  "consignee": {
+    "name": "ИП Антропов Александр Владимирович",
+    "inn": "665204044899"
+  },
+  "items": [
+    {
+      "n": 1,
+      "name": "Романо",
+      "unit": "кг",
+      "qty": 2.34,
+      "price_kop": 49524,
+      "sum_no_vat_kop": 115886,
+      "vat_rate": 5,
+      "vat_sum_kop": 5794,
+      "sum_with_vat_kop": 121680,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "5",
+      "qr": {
+        "art": "5",
+        "name": "Романо",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 2.34,
+        "note": null
+      }
+    },
+    {
+      "n": 2,
+      "name": "Томаты розовые",
+      "unit": "кг",
+      "qty": 3.08,
+      "price_kop": 32857,
+      "sum_no_vat_kop": 101200,
+      "vat_rate": 5,
+      "vat_sum_kop": 5060,
+      "sum_with_vat_kop": 106260,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "6",
+      "qr": {
+        "art": "6",
+        "name": "Томаты розовые",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 3.08,
+        "note": null
+      }
+    },
+    {
+      "n": 3,
+      "name": "Семена тыквенные",
+      "unit": "кг",
+      "qty": 0.14,
+      "price_kop": 65714,
+      "sum_no_vat_kop": 9200,
+      "vat_rate": 5,
+      "vat_sum_kop": 460,
+      "sum_with_vat_kop": 9660,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "45",
+      "qr": {
+        "art": "45",
+        "name": "Семена тыквенные",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.14,
+        "note": null
+      }
+    },
+    {
+      "n": 4,
+      "name": "Кунжут белый",
+      "unit": "кг",
+      "qty": 0.15,
+      "price_kop": 45713,
+      "sum_no_vat_kop": 6857,
+      "vat_rate": 5,
+      "vat_sum_kop": 343,
+      "sum_with_vat_kop": 7200,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90240",
+      "qr": {
+        "art": "90240",
+        "name": "Кунжут белый",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.15,
+        "note": null
+      }
+    },
+    {
+      "n": 5,
+      "name": "Кунжут черный",
+      "unit": "кг",
+      "qty": 0.1,
+      "price_kop": 57140,
+      "sum_no_vat_kop": 5714,
+      "vat_rate": 5,
+      "vat_sum_kop": 286,
+      "sum_with_vat_kop": 6000,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90366",
+      "qr": {
+        "art": "90366",
+        "name": "Кунжут черный",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.1,
+        "note": null
+      }
+    },
+    {
+      "n": 6,
+      "name": "Лук репчатый",
+      "unit": "кг",
+      "qty": 2.07,
+      "price_kop": 6571,
+      "sum_no_vat_kop": 13603,
+      "vat_rate": 5,
+      "vat_sum_kop": 680,
+      "sum_with_vat_kop": 14283,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "20",
+      "qr": {
+        "art": "20",
+        "name": "Лук репчатый",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 2.07,
+        "note": null
+      }
+    },
+    {
+      "n": 7,
+      "name": "Морковь",
+      "unit": "кг",
+      "qty": 2.15,
+      "price_kop": 6286,
+      "sum_no_vat_kop": 13514,
+      "vat_rate": 5,
+      "vat_sum_kop": 676,
+      "sum_with_vat_kop": 14190,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "24",
+      "qr": {
+        "art": "24",
+        "name": "Морковь",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 2.15,
+        "note": null
+      }
+    },
+    {
+      "n": 8,
+      "name": "Лук красный",
+      "unit": "кг",
+      "qty": 2.15,
+      "price_kop": 13809,
+      "sum_no_vat_kop": 29690,
+      "vat_rate": 5,
+      "vat_sum_kop": 1485,
+      "sum_with_vat_kop": 31175,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "84",
+      "qr": {
+        "art": "84",
+        "name": "Лук красный",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 2.15,
+        "note": null
+      }
+    },
+    {
+      "n": 9,
+      "name": "Базилик зеленый",
+      "unit": "кг",
+      "qty": 0.42,
+      "price_kop": 195238,
+      "sum_no_vat_kop": 82000,
+      "vat_rate": 5,
+      "vat_sum_kop": 4100,
+      "sum_with_vat_kop": 86100,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "16",
+      "qr": {
+        "art": "16",
+        "name": "Базилик зелёный",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.42,
+        "note": null
+      }
+    },
+    {
+      "n": 10,
+      "name": "Петрушка",
+      "unit": "кг",
+      "qty": 0.56,
+      "price_kop": 48095,
+      "sum_no_vat_kop": 26933,
+      "vat_rate": 5,
+      "vat_sum_kop": 1347,
+      "sum_with_vat_kop": 28280,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "17",
+      "qr": {
+        "art": "17",
+        "name": "Петрушка",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.56,
+        "note": null
+      }
+    },
+    {
+      "n": 11,
+      "name": "Укроп",
+      "unit": "кг",
+      "qty": 0.28,
+      "price_kop": 48096,
+      "sum_no_vat_kop": 13467,
+      "vat_rate": 5,
+      "vat_sum_kop": 673,
+      "sum_with_vat_kop": 14140,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "18",
+      "qr": {
+        "art": "18",
+        "name": "Укроп",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.28,
+        "note": null
+      }
+    },
+    {
+      "n": 12,
+      "name": "Лук зеленый",
+      "unit": "кг",
+      "qty": 0.1,
+      "price_kop": 38570,
+      "sum_no_vat_kop": 3857,
+      "vat_rate": 5,
+      "vat_sum_kop": 193,
+      "sum_with_vat_kop": 4050,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "19",
+      "qr": {
+        "art": "19",
+        "name": "Лук зелёный",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.1,
+        "note": null
+      }
+    },
+    {
+      "n": 13,
+      "name": "Шпинат мини 0,125кг",
+      "unit": "шт",
+      "qty": 1.0,
+      "price_kop": 224760,
+      "sum_no_vat_kop": 28095,
+      "vat_rate": 5,
+      "vat_sum_kop": 1405,
+      "sum_with_vat_kop": 29500,
+      "confidence": "high",
+      "note": "1 уп = 0.125 кг",
+      "qr_nomenclature_match": "90100",
+      "qr": {
+        "art": "90100",
+        "name": "Шпинат мини",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.125,
+        "note": "1 уп = 0.125 кг"
+      }
+    },
+    {
+      "n": 14,
+      "name": "Шпинат весовой",
+      "unit": "кг",
+      "qty": 0.22,
+      "price_kop": 81905,
+      "sum_no_vat_kop": 18019,
+      "vat_rate": 5,
+      "vat_sum_kop": 901,
+      "sum_with_vat_kop": 18920,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90448",
+      "qr": {
+        "art": "90448",
+        "name": "Шпинат вес",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.22,
+        "note": null
+      }
+    },
+    {
+      "n": 15,
+      "name": "Огурец гладкий",
+      "unit": "кг",
+      "qty": 1.56,
+      "price_kop": 26667,
+      "sum_no_vat_kop": 41600,
+      "vat_rate": 5,
+      "vat_sum_kop": 2080,
+      "sum_with_vat_kop": 43680,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "7",
+      "qr": {
+        "art": "7",
+        "name": "Огурец гладкий",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.56,
+        "note": null
+      }
+    },
+    {
+      "n": 16,
+      "name": "Киви",
+      "unit": "кг",
+      "qty": 1.06,
+      "price_kop": 27238,
+      "sum_no_vat_kop": 28872,
+      "vat_rate": 5,
+      "vat_sum_kop": 1444,
+      "sum_with_vat_kop": 30316,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "30",
+      "qr": {
+        "art": "30",
+        "name": "Киви",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.06,
+        "note": null
+      }
+    },
+    {
+      "n": 17,
+      "name": "Лайм",
+      "unit": "кг",
+      "qty": 1.0,
+      "price_kop": 48095,
+      "sum_no_vat_kop": 48095,
+      "vat_rate": 5,
+      "vat_sum_kop": 2405,
+      "sum_with_vat_kop": 50500,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "37",
+      "qr": {
+        "art": "37",
+        "name": "Лайм",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.0,
+        "note": null
+      }
+    },
+    {
+      "n": 18,
+      "name": "Капуста красная",
+      "unit": "кг",
+      "qty": 2.1,
+      "price_kop": 11429,
+      "sum_no_vat_kop": 24000,
+      "vat_rate": 5,
+      "vat_sum_kop": 1200,
+      "sum_with_vat_kop": 25200,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "51",
+      "qr": {
+        "art": "51",
+        "name": "Капуста красная",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 2.1,
+        "note": null
+      }
+    },
+    {
+      "n": 19,
+      "name": "Тимьян",
+      "unit": "кг",
+      "qty": 0.05,
+      "price_kop": 163800,
+      "sum_no_vat_kop": 8190,
+      "vat_rate": 5,
+      "vat_sum_kop": 410,
+      "sum_with_vat_kop": 8600,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "61",
+      "qr": {
+        "art": "61",
+        "name": "Тимьян",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.05,
+        "note": null
+      }
+    },
+    {
+      "n": 20,
+      "name": "Мята",
+      "unit": "кг",
+      "qty": 0.06,
+      "price_kop": 204767,
+      "sum_no_vat_kop": 12286,
+      "vat_rate": 5,
+      "vat_sum_kop": 614,
+      "sum_with_vat_kop": 12900,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90242",
+      "qr": {
+        "art": "90242",
+        "name": "Мята свежая",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.06,
+        "note": null
+      }
+    },
+    {
+      "n": 21,
+      "name": "Орех фундук очищенный",
+      "unit": "кг",
+      "qty": 0.21,
+      "price_kop": 157143,
+      "sum_no_vat_kop": 33000,
+      "vat_rate": 5,
+      "vat_sum_kop": 1650,
+      "sum_with_vat_kop": 34650,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90423",
+      "qr": {
+        "art": "90423",
+        "name": "Орех фундук",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.21,
+        "note": null
+      }
+    },
+    {
+      "n": 22,
+      "name": "Клубника",
+      "unit": "кг",
+      "qty": 0.11,
+      "price_kop": 104764,
+      "sum_no_vat_kop": 11524,
+      "vat_rate": 5,
+      "vat_sum_kop": 576,
+      "sum_with_vat_kop": 12100,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90449",
+      "qr": {
+        "art": "90449",
+        "name": "Клубника",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.11,
+        "note": null
+      }
+    }
+  ],
+  "totals": {
+    "sum_no_vat_kop": 675602,
+    "vat_sum_kop": 33782,
+    "sum_with_vat_kop": 709384,
+    "lines": 22,
+    "amount_words": "Семь тысяч девяносто три рубля 84 копейки"
+  },
+  "extraction_flags": [
+    "22 строки на 2 листах, арифметика сверена (6756.02 / 337.82 / 7093.84).",
+    "Старая накладная от 06.06.2026 — постинг с датой документа.",
+    "Шпинат мини: 1 уп = 0.125 кг (товар в кг). Заведены: Шпинат вес (90448), Клубника (90449)."
+  ]
+}

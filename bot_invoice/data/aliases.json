@@ -238,6 +238,131 @@
    "qr_name": "Молоко безлактозное 1,8%",
    "note": null,
    "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "шпинат",
+    "мини"
+   ],
+   "art": "90100",
+   "qr_name": "Шпинат мини",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "шпинат",
+    "весов"
+   ],
+   "art": "90448",
+   "qr_name": "Шпинат вес",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "клубника"
+   ],
+   "art": "90449",
+   "qr_name": "Клубника",
+   "note": "свежая; концентрат — 90231",
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "мята"
+   ],
+   "art": "90242",
+   "qr_name": "Мята свежая",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "орех",
+    "фундук"
+   ],
+   "art": "90423",
+   "qr_name": "Орех фундук",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "семена",
+    "тыкв"
+   ],
+   "art": "45",
+   "qr_name": "Семена тыквенные",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "кунжут",
+    "бел"
+   ],
+   "art": "90240",
+   "qr_name": "Кунжут белый",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "кунжут",
+    "чер"
+   ],
+   "art": "90366",
+   "qr_name": "Кунжут чёрный",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "лук",
+    "красн"
+   ],
+   "art": "84",
+   "qr_name": "Лук красный",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "морковь"
+   ],
+   "art": "24",
+   "qr_name": "Морковь",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "лайм"
+   ],
+   "art": "37",
+   "qr_name": "Лайм",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "капуста",
+    "красн"
+   ],
+   "art": "51",
+   "qr_name": "Капуста красная",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "тимьян"
+   ],
+   "art": "61",
+   "qr_name": "Тимьян",
+   "note": null,
+   "confidence": "ok"
   }
  ]
 }
