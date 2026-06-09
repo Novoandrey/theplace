@@ -161,7 +161,7 @@ def cmd_auth(layer, login, password):
         print("Неожиданный ответ — см. статус выше.")
 
 
-def cmd_invoice(layer, login, password):
+def cmd_invoice(layer, login, password, number=None):
     status, data = _load(layer, login, password, *INCOMING)
     print(f"invoice/list ({INCOMING[0]}): HTTP {status}")
     if status != 200 or not isinstance(data, list):
@@ -170,6 +170,15 @@ def cmd_invoice(layer, login, password):
     print(f"приходных в системе: {len(data)}")
     if not data:
         print("Приходных пока нет — создайте одну в бэк-офисе вручную и повторите.")
+        return
+    if number:
+        hits = [it for it in data if isinstance(it, dict)
+                and str(it.get("documentNumber")) == str(number)]
+        if hits:
+            for it in hits:
+                print(f"  НАЙДЕНО: id={it.get('id')}  № {it.get('documentNumber')}")
+        else:
+            print(f"  № «{number}» не найден среди {len(data)} приходных.")
         return
     print("Существующие приходные (для команды read --id):")
     for it in data[:15]:
@@ -310,7 +319,8 @@ def cmd_tree(layer, login, password, module, out=None, map_out=None):
         art = n.get("article")
         if art in (None, ""):  # группы/категории без артикула пропускаем
             continue
-        unit = (n.get("measureUnit") or {}).get("id") if isinstance(n.get("measureUnit"), dict) else None
+        mu = n.get("measureUnit")
+        unit = mu.get("id") if isinstance(mu, dict) else None
         rows.append({"id": n["id"], "art": str(art), "name": n.get("name"), "unit": unit})
     print(f"позиций с артикулом: {len(rows)} (всего узлов: {len(nodes)})")
     for r in rows[:20]:
@@ -332,13 +342,14 @@ def main():
     ap = argparse.ArgumentParser(description="read-only разведка открытого API QR (путь A)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("auth", help="проверить авторизацию (чтение номенклатуры)")
-    sub.add_parser("invoice", help="список приходных с id")
+    inv_p = sub.add_parser("invoice", help="список приходных с id")
+    inv_p.add_argument("--number", default=None, help="найти id приходной по номеру документа")
     sr = sub.add_parser("read", help="read объекта С ПОДОБЪЕКТАМИ по id (по умолчанию приходная)")
     sr.add_argument("--id", dest="object_id", type=int, required=True)
     sr.add_argument("--module", default=None)
     sr.add_argument("--class", dest="class_name", default=None)
     sr.add_argument("--raw", action="store_true",
-                    help="печать ПОЛНОГО сырого JSON (значения не скрыты) — для реконструкции create")
+                    help="печать ПОЛНОГО сырого JSON (для реконструкции create)")
     sr.add_argument("--out", default=None, help="сохранить сырой JSON в файл")
     sub.add_parser("refs", help="id+названия складов и поставщиков (для payload)")
     sp = sub.add_parser("schema", help="снять форму любого объекта по moduleName/className")
@@ -351,7 +362,7 @@ def main():
     sc.add_argument("--parent", type=int, required=True)
     sc.add_argument("--module", default=None)
     sc.add_argument("--class", dest="class_name", default=None)
-    st = sub.add_parser("tree", help="плоский список номенклатуры через /api/tree (id+article+name)")
+    st = sub.add_parser("tree", help="плоский список номенклатуры через /api/tree")
     st.add_argument("--module", default="warehouse.nomenclature.singleproduct")
     st.add_argument("--out", default=None, help="сохранить сырой ответ в файл")
     st.add_argument("--map-out", dest="map_out", default=None,
@@ -361,7 +372,7 @@ def main():
     if a.cmd == "auth":
         cmd_auth(layer, login, password)
     elif a.cmd == "invoice":
-        cmd_invoice(layer, login, password)
+        cmd_invoice(layer, login, password, getattr(a, "number", None))
     elif a.cmd == "read":
         cmd_read(layer, login, password, a.object_id, a.module, a.class_name,
                  raw=a.raw, out=a.out)
