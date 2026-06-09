@@ -283,6 +283,49 @@ def cmd_children(layer, login, password, parent, module, class_name):
                   f"unit_id={mu.get('id')} pid={it.get('parentId')} {it.get('name')}")
 
 
+def cmd_tree(layer, login, password, module, out=None, map_out=None):
+    """GET /api/tree?moduleName=<module> — плоский список номенклатуры (без групп)."""
+    base = f"https://{layer}.quickresto.ru/platform/online/api/tree"
+    qs = urllib.parse.urlencode({"moduleName": module})
+    token = base64.b64encode(f"{login}:{password}".encode()).decode()
+    req = urllib.request.Request(f"{base}?{qs}", headers={
+        "Authorization": f"Basic {token}", "Accept": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            status, body = r.status, r.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as e:
+        status, body = e.code, e.read().decode("utf-8", "replace")[:500]
+    print(f"tree (moduleName={module}): HTTP {status}")
+    if status != 200:
+        print(body[:500])
+        return
+    data = json.loads(body)
+    nodes = data if isinstance(data, list) else data.get("items") or data.get("children") or []
+    rows = []
+    for n in nodes:
+        if not isinstance(n, dict) or n.get("id") is None:
+            continue
+        art = n.get("article")
+        if art in (None, ""):  # группы/категории без артикула пропускаем
+            continue
+        unit = (n.get("measureUnit") or {}).get("id") if isinstance(n.get("measureUnit"), dict) else None
+        rows.append({"id": n["id"], "art": str(art), "name": n.get("name"), "unit": unit})
+    print(f"позиций с артикулом: {len(rows)} (всего узлов: {len(nodes)})")
+    for r in rows[:20]:
+        print(f"  art {r['art']:>6} | id {r['id']:>5} | unit {r['unit']} | {str(r['name'])[:32]}")
+    if len(rows) > 20:
+        print(f"  … ещё {len(rows) - 20}")
+    if out:
+        with open(out, "w", encoding="utf-8") as f:
+            f.write(body)
+        print(f"Сырой ответ сохранён: {out}")
+    if map_out:
+        amap = {r["art"]: {"id": r["id"], "unit": r["unit"], "name": r["name"]} for r in rows}
+        with open(map_out, "w", encoding="utf-8") as f:
+            json.dump(amap, f, ensure_ascii=False, indent=2)
+        print(f"Карта артикул→id сохранена: {map_out} ({len(amap)} записей)")
+
+
 def main():
     ap = argparse.ArgumentParser(description="read-only разведка открытого API QR (путь A)")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -306,6 +349,11 @@ def main():
     sc.add_argument("--parent", type=int, required=True)
     sc.add_argument("--module", default=None)
     sc.add_argument("--class", dest="class_name", default=None)
+    st = sub.add_parser("tree", help="плоский список номенклатуры через /api/tree (id+article+name)")
+    st.add_argument("--module", default="warehouse.nomenclature.singleproduct")
+    st.add_argument("--out", default=None, help="сохранить сырой ответ в файл")
+    st.add_argument("--map-out", dest="map_out", default=None,
+                    help="сохранить карту артикул→id в JSON")
     a = ap.parse_args()
     layer, login, password = _env()
     if a.cmd == "auth":
@@ -323,6 +371,8 @@ def main():
         cmd_map(layer, login, password, a.module, a.class_name)
     elif a.cmd == "children":
         cmd_children(layer, login, password, a.parent, a.module, a.class_name)
+    elif a.cmd == "tree":
+        cmd_tree(layer, login, password, a.module, out=a.out, map_out=a.map_out)
 
 
 if __name__ == "__main__":

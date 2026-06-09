@@ -222,3 +222,21 @@ payload с `SingleProduct` дал 500/NPE — вероятная причина:
 
 **Решено в этой сессии:** формат импорта (§4, образец ПН135) · ключ сопоставления = Артикул QR (§5) ·
 ставки НДС 2026 (§5a) · тест EK-2029 сходится (§6).
+
+## 8. Ответ поддержки QR (2026-06-08) — РАБОЧАЯ схема create + перечисление номенклатуры
+**Создание приходной — НЕ одним объектом, а раздельно (это снимает NPE PrimeCostCalculator):**
+1. Шапка: `POST /api/create?moduleName=warehouse.documents.incoming` — только
+   `documentNumber, invoiceDate, provider{id,className}, store{id,className}, paid`. В ответе — id.
+2. Позиции по одной: `POST /api/create?moduleName=warehouse.documents.items.incoming` (ОТДЕЛЬНЫЙ модуль),
+   тело `InvoiceItem`: `product, measureUnit, actualAmount, price, priceWithVat, vat, extraExpenses` +
+   `parentItem{id=<id шапки>, className=IncomingInvoice}`.
+3. Финальный `POST /api/update` на накладную → пересчёт себестоимости.
+`vat`: для «без НДС» → `{"id": -1, "title": "<без НДС>"}`, иначе `{"id": <id ставки>}`.
+Эндпоинт create отдельный от update; className в query НЕ обязателен (хватает moduleName).
+
+**Перечисление номенклатуры:** `GET /api/tree?moduleName=warehouse.nomenclature.singleproduct`
+(или `...dish`) → плоский список с id (без распределения по группам). Это и есть источник карты
+`артикул→id`. Инструмент: `qr_api_probe.py tree --module ... --map-out map.json`.
+
+Инструмент `qr_create_test.py` переписан под 3 шага: `create-header` / `add-item` / `recalc` / `remove`
+(каждый dry-run по умолчанию, запись по `--confirm`, ошибки сохраняются в qr_error_*.html).
