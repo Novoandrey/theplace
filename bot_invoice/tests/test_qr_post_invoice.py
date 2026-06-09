@@ -103,3 +103,25 @@ def test_build_plan_handles_no_vat(ek2029, nmap):
     assert errors == []
     line = next(i for i in items if i["n"] == bad["items"][0]["n"])
     assert line["vat_id"] == -1
+
+
+def test_build_plan_dish_class_uses_dish_map(ek2029, nmap):
+    inv = json.loads(json.dumps(ek2029))
+    inv["items"] = [inv["items"][0]]
+    inv["items"][0]["qr"]["class"] = "dish"
+    inv["items"][0]["qr"]["art"] = "D1"
+    dish_map = {"D1": {"id": 777, "unit": 1, "name": "Чизкейк мини"}}
+    items, errors = poster.build_plan(inv, nmap, dish_map)
+    assert errors == []
+    assert items[0]["product_class"] == "dish"
+    assert items[0]["product_id"] == 777
+    pay = poster.make_item_payload(10, items[0])
+    assert pay["product"]["className"] == poster.qr.CN_DISH
+
+
+def test_build_plan_dish_without_map_errors(ek2029, nmap):
+    inv = json.loads(json.dumps(ek2029))
+    inv["items"] = [inv["items"][0]]
+    inv["items"][0]["qr"]["class"] = "dish"
+    items, errors = poster.build_plan(inv, nmap, None)
+    assert items == [] and errors and "dish" in errors[0]

@@ -45,13 +45,17 @@ def load_json(path):
         return json.load(f)
 
 
-def build_plan(extracted, nmap):
+def build_plan(extracted, nmap, dish_map=None):
     """Собрать позиции для постинга из извлечённой накладной + карты артикул→id.
+
+    nmap — карта SingleProduct (товары/ингредиенты); dish_map — карта Dish (блюда), опционально.
+    Класс позиции берётся из it["qr"]["class"] ("singleproduct" по умолчанию, либо "dish").
 
     -> (items, errors). items — список словарей-позиций; errors — список строк (если не пусто,
     постинг отменяется). Цены: priceWithVat = сумма_с_ндс / кол-во (ведущая, из накладной);
     price = сумма_без_ндс / кол-во.
     """
+    maps = {"singleproduct": nmap, "dish": dish_map}
     items, errors = [], []
     for it in extracted.get("items", []):
         n = it.get("n")
@@ -59,9 +63,19 @@ def build_plan(extracted, nmap):
         art = qr_ref.get("art")
         qty = qr_ref.get("qty")
         rate = it.get("vat_rate")
-        rec = nmap.get(str(art)) if art is not None else None
+        cls = (qr_ref.get("class") or "singleproduct").lower()
+        if cls not in maps:
+            errors.append(f"стр.{n} (арт.{art}): неизвестный класс {cls!r} "
+                          "(ожидается singleproduct|dish)")
+            continue
+        cls_map = maps[cls]
+        if cls_map is None:
+            errors.append(f"стр.{n} (арт.{art}): нет карты для класса {cls!r} "
+                          f"(для блюд передай --dish-map)")
+            continue
+        rec = cls_map.get(str(art)) if art is not None else None
         if rec is None:
-            errors.append(f"стр.{n}: артикул {art!r} не найден в карте номенклатуры")
+            errors.append(f"стр.{n}: артикул {art!r} не найден в карте ({cls})")
             continue
         if not isinstance(qty, (int, float)) or qty <= 0:
             errors.append(f"стр.{n} (арт.{art}): некорректное кол-во {qty!r}")
@@ -78,6 +92,7 @@ def build_plan(extracted, nmap):
             "art": str(art),
             "name": rec.get("name") or qr_ref.get("name"),
             "product_id": rec["id"],
+            "product_class": cls,
             "unit_id": rec.get("unit"),
             "qty": qty,
             "price": round(sum_no / qty, 5),
@@ -141,7 +156,8 @@ def make_item_payload(invoice_id, item):
         "actualAmount": item["qty"],
         "price": item["price"],
         "priceWithVat": item["price_with_vat"],
-        "product": {"className": qr.CN_SINGLEPRODUCT, "id": item["product_id"]},
+        "product": {"className": qr.PRODUCT_CLASSES[item.get("product_class", "singleproduct")],
+                    "id": item["product_id"]},
         "measureUnit": {"className": qr.CN_UNIT, "id": item["unit_id"]},
         "vat": ({"id": NO_VAT_ID, "title": "<без НДС>"}
                 if item["vat_id"] == NO_VAT_ID else {"id": item["vat_id"]}),
@@ -176,14 +192,16 @@ def print_plan(extracted, items, errors, args):
 
 
 def cmd_plan(args):
-    items, errors = build_plan(load_json(args.extracted), load_json(args.map))
+    dish_map = load_json(args.dish_map) if getattr(args, "dish_map", None) else None
+    items, errors = build_plan(load_json(args.extracted), load_json(args.map), dish_map)
     print_plan(load_json(args.extracted), items, errors, args)
     print("\nDRY-RUN (команда plan): ничего не отправлено.")
 
 
 def cmd_post(args):
     extracted = load_json(args.extracted)
-    items, errors = build_plan(extracted, load_json(args.map))
+    dish_map = load_json(args.dish_map) if getattr(args, "dish_map", None) else None
+    items, errors = build_plan(extracted, load_json(args.map), dish_map)
     print_plan(extracted, items, errors, args)
     if errors:
         sys.exit("\nЕсть ошибки сопоставления — постинг отменён.")
@@ -250,6 +268,8 @@ def main():
         sp = sub.add_parser(name, help=h)
         sp.add_argument("--extracted", required=True, help="*_extracted.json")
         sp.add_argument("--map", required=True, help="data/nomenclature_map.json")
+        sp.add_argument("--dish-map", dest="dish_map", default=None,
+                        help="карта блюд (Dish) артикул→id, если в накладной есть блюда")
         sp.add_argument("--provider-id", type=int, default=0)
         sp.add_argument("--provider-class", choices=qr.PROVIDER_CLASSES, default="organization")
         sp.add_argument("--store-id", type=int, default=1)
