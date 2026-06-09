@@ -1,0 +1,125 @@
+{
+ "note": "Поставщики QR (warehouse.providers). class: businessman=ИП, organization=ООО, '?'=уточнить. verified=подтверждён живым read объекта.",
+ "source": "qr_api_probe refs, 2026-06-09",
+ "providers": [
+  {
+   "id": 1,
+   "name": "Чеки (.",
+   "class": "?",
+   "verified": false,
+   "comment": "авто-документы из чеков"
+  },
+  {
+   "id": 2,
+   "name": "ИП Калинин",
+   "class": "businessman",
+   "verified": true,
+   "comment": null
+  },
+  {
+   "id": 3,
+   "name": "ООО \"Фирма Опт-Маркет\"",
+   "class": "organization",
+   "verified": false,
+   "comment": null
+  },
+  {
+   "id": 4,
+   "name": "ООО \"Рано утром\"",
+   "class": "organization",
+   "verified": true,
+   "comment": null
+  },
+  {
+   "id": 5,
+   "name": "Чеки М.",
+   "class": "?",
+   "verified": false,
+   "comment": "авто-документы из чеков"
+  },
+  {
+   "id": 6,
+   "name": "Тэйсти кофе",
+   "class": "?",
+   "verified": false,
+   "comment": "уточнить класс"
+  },
+  {
+   "id": 7,
+   "name": "ИП Соболев",
+   "class": "businessman",
+   "verified": false,
+   "comment": null
+  },
+  {
+   "id": 8,
+   "name": "ИП Смирнов",
+   "class": "businessman",
+   "verified": false,
+   "comment": null
+  },
+  {
+   "id": 9,
+   "name": "ИП Панфилов",
+   "class": "businessman",
+   "verified": false,
+   "comment": null
+  },
+  {
+   "id": 10,
+   "name": "Рестоэксперт",
+   "class": "organization",
+   "verified": false,
+   "comment": "в накладной EK-2029 — Рестоэксперт ООО"
+  },
+  {
+   "id": 11,
+   "name": "Марр Руссия",
+   "class": "organization",
+   "verified": false,
+   "comment": "уточнить класс"
+  },
+  {
+   "id": 12,
+   "name": "ИП Суслов",
+   "class": "businessman",
+   "verified": false,
+   "comment": null
+  },
+  {
+   "id": 13,
+   "name": "Премиум сервис",
+   "class": "?",
+   "verified": false,
+   "comment": "уточнить класс"
+  },
+  {
+   "id": 14,
+   "name": "РОСТИНГ БРЮ (SUBMARINE)",
+   "class": "?",
+   "verified": false,
+   "comment": "уточнить класс"
+  },
+  {
+   "id": 15,
+   "name": "Фреш",
+   "class": "?",
+   "verified": false,
+   "comment": "уточнить класс"
+  },
+  {
+   "id": 16,
+   "name": "ИП Глазков",
+   "class": "businessman",
+   "verified": false,
+   "comment": null
+  },
+  {
+   "id": 17,
+   "name": "Ингрессо",
+   "class": "?",
+   "verified": false,
+   "comment": "уточнить класс"
+  }
+ ]
+}

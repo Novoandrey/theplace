@@ -171,6 +171,35 @@
    "qr_name": "Яблоко красное",
    "note": null,
    "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "фокач"
+   ],
+   "art": "85",
+   "qr_name": "Фокачча",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "булоч",
+    "бургер"
+   ],
+   "art": "86",
+   "qr_name": "Булка д/бургера бриошь",
+   "note": "в т.ч. «Хоккайдо булочка для бургера»",
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "хлеб",
+    "хоккайдо"
+   ],
+   "art": "90236",
+   "qr_name": "Хоккайдо тост",
+   "note": null,
+   "confidence": "ok"
   }
  ]
 }
