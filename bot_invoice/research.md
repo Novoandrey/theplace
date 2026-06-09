@@ -240,3 +240,10 @@ payload с `SingleProduct` дал 500/NPE — вероятная причина:
 
 Инструмент `qr_create_test.py` переписан под 3 шага: `create-header` / `add-item` / `recalc` / `remove`
 (каждый dry-run по умолчанию, запись по `--confirm`, ошибки сохраняются в qr_error_*.html).
+
+### 8a. CREATE ПОДТВЕРЖДЁН END-TO-END (2026-06-09)
+Трёхшаговая схема отработала боево: `create-header` (id=150) → `add-item` (Томаты, SingleProduct 9,
+ед.2, vat id=4/5%, id позиции 1074) → `recalc` — все HTTP 200. В бэк-офисе накладная видна, суммы
+сошлись (848.70 / 808.29 / 40.41). Карта `артикул→id` полна (240, `data/nomenclature_map.json`).
+ОСТАВШИЙСЯ ПРОБЕЛ под EK-2029: id ставок НДС. Известно: 5% → vat id=4. Нужны id для 10% и 22%
+(в EK-2029 обе ставки) — энумерация словаря НДС. `vat`-объект: `{id, value, taxType:'priceIncludesVat'}`.
