@@ -120,6 +120,13 @@
    "class": "?",
    "verified": false,
    "comment": "уточнить класс"
+  },
+  {
+   "id": 18,
+   "name": "ИП Некрасов Роман Борисович",
+   "class": "businessman",
+   "verified": true,
+   "comment": "кофе (СОК); ИНН 720317740020"
   }
  ]
 }
