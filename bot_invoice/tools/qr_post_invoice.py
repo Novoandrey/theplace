@@ -86,6 +86,31 @@ def plan_totals(items):
     }
 
 
+def find_duplicate(invoices, number):
+    """Среди списка приходных найти id документа с таким documentNumber (или None)."""
+    for it in invoices:
+        if isinstance(it, dict) and str(it.get("documentNumber")) == str(number):
+            return it.get("id")
+    return None
+
+
+def check_existing(layer, login, password, number):
+    """Проверить через /api/list, нет ли уже приходной с таким номером.
+
+    -> (ok, dup_id): ok=False если список получить не удалось; dup_id — id дубля или None.
+    """
+    st, bd = qr._request(layer, login, password, "list")
+    if st != 200:
+        return False, None
+    try:
+        data = json.loads(bd)
+    except json.JSONDecodeError:
+        return False, None
+    if not isinstance(data, list):
+        return False, None
+    return True, find_duplicate(data, number)
+
+
 def make_header_payload(number, date, provider_id, provider_class, store_id):
     return {
         "className": qr.CN_INVOICE,
@@ -159,6 +184,13 @@ def cmd_post(args):
         d = extracted.get("document", {}).get("date")
         date = f"{d}T09:00:00.000Z" if d else None
 
+    ok, dup_id = check_existing(layer, login, password, number)
+    if dup_id is not None and not args.allow_duplicate:
+        sys.exit(f"\nВ QR уже есть приходная № «{number}» (id={dup_id}). Постинг отменён, "
+                 "чтобы не задвоить приход. Если всё же нужно — добавь --allow-duplicate.")
+    if not ok:
+        print("⚠ Не удалось проверить дубликаты (list ≠ 200) — продолжаю.")
+
     print("\n=== ПОСТИНГ ===")
     st, bd = qr._request(layer, login, password, "create", module=qr.MODULE,
                          payload=make_header_payload(number, date, args.provider_id,
@@ -212,6 +244,8 @@ def main():
         sp.add_argument("--date", default=None, help="ISO; по умолчанию из накладной")
         if name == "post":
             sp.add_argument("--confirm", action="store_true")
+            sp.add_argument("--allow-duplicate", dest="allow_duplicate", action="store_true",
+                            help="не прерываться, если приходная с таким № уже есть в QR")
     args = ap.parse_args()
     if args.cmd == "post" and args.confirm and not args.provider_id:
         sys.exit("Для --confirm нужен реальный --provider-id (см. probe refs).")

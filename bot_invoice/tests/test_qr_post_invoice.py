@@ -78,3 +78,10 @@ def test_zero_qty_is_error(ek2029, nmap):
     bad["items"][0]["qr"]["qty"] = 0
     _, errors = poster.build_plan(bad, nmap)
     assert any("кол-во" in e for e in errors)
+
+
+def test_find_duplicate_by_number():
+    inv = [{"id": 5, "documentNumber": "ПН1"}, {"id": 9, "documentNumber": "EK-2029"}]
+    assert poster.find_duplicate(inv, "EK-2029") == 9
+    assert poster.find_duplicate(inv, "EK-9999") is None
+    assert poster.find_duplicate([], "EK-2029") is None
