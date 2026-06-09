@@ -200,6 +200,44 @@
    "qr_name": "Хоккайдо тост",
    "note": null,
    "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "santal"
+   ],
+   "art": "90137",
+   "qr_name": "Сок красного апельсина Santal",
+   "note": "напиток Santal красный апельсин",
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "творог"
+   ],
+   "art": "90008",
+   "qr_name": "Творог 9%",
+   "note": null,
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "молоко",
+    "3.2"
+   ],
+   "art": "98",
+   "qr_name": "Молоко 3,2%",
+   "note": "в т.ч. «Село Зелёное» 3.2%",
+   "confidence": "ok"
+  },
+  {
+   "keywords": [
+    "молоко",
+    "безлакт"
+   ],
+   "art": "90368",
+   "qr_name": "Молоко безлактозное 1,8%",
+   "note": null,
+   "confidence": "ok"
   }
  ]
 }
