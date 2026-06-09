@@ -179,12 +179,9 @@ def cmd_post(args):
 
     layer, login, password = qr._env()
     number = args.number or extracted.get("document", {}).get("number") or qr.TEST_DOC_NUMBER
-    date = args.date
-    if not date:
-        d = extracted.get("document", {}).get("date")
-        # Время документа — 09:00 по Екатеринбургу (UTC+5) → 04:00Z. QR показывает в поясе кафе,
-        # поэтому фиксируем локальные 09:00 (иначе 09:00Z отображались как 14:00). Переопределяется --date.
-        date = f"{d}T04:00:00.000Z" if d else None
+    # По умолчанию дата приходной = реальный момент постинга (now, UTC); QR покажет в поясе кафе.
+    # Чтобы проставить дату/время документа — флаг --date "ГГГГ-ММ-ДДTчч:мм:сс.000Z".
+    date = args.date  # None → header подставит текущий момент (qr._now_iso)
 
     ok, dup_id = check_existing(layer, login, password, number)
     if dup_id is not None and not args.allow_duplicate:
@@ -243,7 +240,7 @@ def main():
         sp.add_argument("--provider-class", choices=qr.PROVIDER_CLASSES, default="organization")
         sp.add_argument("--store-id", type=int, default=1)
         sp.add_argument("--number", default=None)
-        sp.add_argument("--date", default=None, help="ISO; по умолчанию из накладной")
+        sp.add_argument("--date", default=None, help="ISO дата документа; по умолчанию — момент постинга")
         if name == "post":
             sp.add_argument("--confirm", action="store_true")
             sp.add_argument("--allow-duplicate", dest="allow_duplicate", action="store_true",
