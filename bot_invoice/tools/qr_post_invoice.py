@@ -27,6 +27,17 @@ import qr_create_test as qr  # общий клиент open API (_env/_request/_
 
 # Ставки НДС (%) → id словаря core.dictionaries.vat (подтверждено /api/tree, 2026-06-09)
 VAT_ID_BY_PERCENT = {0: 1, 5: 4, 10: 2, 22: 3}
+NO_VAT_ID = -1  # «без НДС» (не 0%): vat {"id": -1, "title": "<без НДС>"}
+NO_VAT_MARKERS = {"без_ндс", "без ндс", "none", "no_vat"}
+
+
+def vat_id_for(rate):
+    """Ставка → id словаря НДС. «без НДС» → -1; проценты → по карте; иначе None."""
+    if rate in (-1, "-1"):
+        return NO_VAT_ID
+    if isinstance(rate, str) and rate.strip().lower().replace("ё", "е") in NO_VAT_MARKERS:
+        return NO_VAT_ID
+    return VAT_ID_BY_PERCENT.get(rate)
 
 
 def load_json(path):
@@ -55,9 +66,10 @@ def build_plan(extracted, nmap):
         if not isinstance(qty, (int, float)) or qty <= 0:
             errors.append(f"стр.{n} (арт.{art}): некорректное кол-во {qty!r}")
             continue
-        if rate not in VAT_ID_BY_PERCENT:
-            rates = list(VAT_ID_BY_PERCENT)
-            errors.append(f"стр.{n} (арт.{art}): ставка НДС {rate!r}% не в карте {rates}")
+        vat_id = vat_id_for(rate)
+        if vat_id is None:
+            rates = list(VAT_ID_BY_PERCENT) + ["без НДС"]
+            errors.append(f"стр.{n} (арт.{art}): ставка НДС {rate!r} не в карте {rates}")
             continue
         sum_with = it.get("sum_with_vat_kop", 0) / 100
         sum_no = it.get("sum_no_vat_kop", 0) / 100
@@ -70,7 +82,7 @@ def build_plan(extracted, nmap):
             "qty": qty,
             "price": round(sum_no / qty, 5),
             "price_with_vat": round(sum_with / qty, 5),
-            "vat_id": VAT_ID_BY_PERCENT[rate],
+            "vat_id": vat_id,
             "vat_rate": rate,
             "sum_no_vat": round(sum_no, 2),
             "sum_with_vat": round(sum_with, 2),
@@ -131,7 +143,8 @@ def make_item_payload(invoice_id, item):
         "priceWithVat": item["price_with_vat"],
         "product": {"className": qr.CN_SINGLEPRODUCT, "id": item["product_id"]},
         "measureUnit": {"className": qr.CN_UNIT, "id": item["unit_id"]},
-        "vat": {"id": item["vat_id"]},
+        "vat": ({"id": NO_VAT_ID, "title": "<без НДС>"}
+                if item["vat_id"] == NO_VAT_ID else {"id": item["vat_id"]}),
         "parentItem": {"className": qr.CN_INVOICE, "id": invoice_id},
     }
 
@@ -146,8 +159,9 @@ def print_plan(extracted, items, errors, args):
     print(f"{'стр':>3} {'арт':>6} {'id':>5} {'кол-во':>8} {'цена с НДС':>11} "
           f"{'НДС':>5} {'сумма с НДС':>12}  наименование")
     for i in items:
+        vat_lbl = "б/НДС" if i["vat_id"] == NO_VAT_ID else f"{i['vat_rate']}%"
         print(f"{i['n']:>3} {i['art']:>6} {i['product_id']:>5} {i['qty']:>8} "
-              f"{i['price_with_vat']:>11.5f} {str(i['vat_rate']) + '%':>5} "
+              f"{i['price_with_vat']:>11.5f} {vat_lbl:>6} "
               f"{i['sum_with_vat']:>12.2f}  {str(i['name'])[:30]}")
     t = plan_totals(items)
     print(f"ИТОГО: без НДС {t['sum_no_vat']:.2f} · с НДС {t['sum_with_vat']:.2f}")
@@ -240,7 +254,8 @@ def main():
         sp.add_argument("--provider-class", choices=qr.PROVIDER_CLASSES, default="organization")
         sp.add_argument("--store-id", type=int, default=1)
         sp.add_argument("--number", default=None)
-        sp.add_argument("--date", default=None, help="ISO дата документа; по умолчанию — момент постинга")
+        sp.add_argument("--date", default=None,
+                        help="ISO дата документа (по умолчанию — момент постинга)")
         if name == "post":
             sp.add_argument("--confirm", action="store_true")
             sp.add_argument("--allow-duplicate", dest="allow_duplicate", action="store_true",

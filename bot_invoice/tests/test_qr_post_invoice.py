@@ -85,3 +85,21 @@ def test_find_duplicate_by_number():
     assert poster.find_duplicate(inv, "EK-2029") == 9
     assert poster.find_duplicate(inv, "EK-9999") is None
     assert poster.find_duplicate([], "EK-2029") is None
+
+
+def test_vat_id_for_no_vat_and_percent():
+    assert poster.vat_id_for("без НДС") == -1
+    assert poster.vat_id_for("без_ндс") == -1
+    assert poster.vat_id_for(-1) == -1
+    assert poster.vat_id_for(22) == 3
+    assert poster.vat_id_for(5) == 4
+    assert poster.vat_id_for(7) is None      # неизвестная ставка
+
+
+def test_build_plan_handles_no_vat(ek2029, nmap):
+    bad = json.loads(json.dumps(ek2029))
+    bad["items"][0]["vat_rate"] = "без НДС"
+    items, errors = poster.build_plan(bad, nmap)
+    assert errors == []
+    line = next(i for i in items if i["n"] == bad["items"][0]["n"])
+    assert line["vat_id"] == -1
