@@ -50,9 +50,11 @@ CN_SINGLEPRODUCT = "ru.edgex.quickresto.modules.warehouse.nomenclature.singlepro
 CN_DISH = "ru.edgex.quickresto.modules.warehouse.nomenclature.dish.Dish"
 CN_UNIT = "ru.edgex.quickresto.modules.core.dictionaries.measureunits.MeasureUnit"
 CN_STORE = "ru.edgex.quickresto.modules.warehouse.store.Store"
+CN_NATURALPERSON = "ru.edgex.quickresto.modules.warehouse.providers.NaturalPerson"
 PROVIDER_CLASSES = {
     "organization": "ru.edgex.quickresto.modules.warehouse.providers.Organization",
     "businessman": "ru.edgex.quickresto.modules.warehouse.providers.Businessman",
+    "naturalperson": CN_NATURALPERSON,  # «Чеки (подотчёт)» — закупка по кассовым чекам
 }
 PRODUCT_CLASSES = {"singleproduct": CN_SINGLEPRODUCT, "dish": CN_DISH}
 
@@ -246,7 +248,7 @@ def cmd_remove(args):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="создание приходной QR через open API (путь A, 3 шага)")
+    ap = argparse.ArgumentParser(description="создание приходной QR через open API (3 шага)")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     h = sub.add_parser("create-header", help="шаг 1: создать шапку приходной")
