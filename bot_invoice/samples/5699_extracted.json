@@ -1,0 +1,414 @@
+{
+  "schema_version": "0.1",
+  "money_unit": "kopeck",
+  "currency": "RUB",
+  "source": {
+    "files": [
+      "Универсальныи_.pdf (2 стр.)"
+    ],
+    "doc_type": "УПД",
+    "status": "1"
+  },
+  "document": {
+    "number": "5699",
+    "date": "2026-06-09",
+    "basis": "Договор поставки № 54/24 от 24.09.2024"
+  },
+  "supplier": {
+    "name": "ИП Калинин Сергей Владимирович",
+    "inn": "660108142622"
+  },
+  "consignee": {
+    "name": "ИП Антропов Александр Владимирович",
+    "inn": "665204044899"
+  },
+  "items": [
+    {
+      "n": 1,
+      "name": "Томаты розовые",
+      "unit": "кг",
+      "qty": 2.25,
+      "price_kop": 32857,
+      "sum_no_vat_kop": 73929,
+      "vat_rate": 5,
+      "vat_sum_kop": 3696,
+      "sum_with_vat_kop": 77625,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "6",
+      "qr": {
+        "art": "6",
+        "name": "Томаты розовые",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 2.25,
+        "note": null
+      }
+    },
+    {
+      "n": 2,
+      "name": "Романо",
+      "unit": "кг",
+      "qty": 1.28,
+      "price_kop": 49523,
+      "sum_no_vat_kop": 63390,
+      "vat_rate": 5,
+      "vat_sum_kop": 3170,
+      "sum_with_vat_kop": 66560,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "5",
+      "qr": {
+        "art": "5",
+        "name": "Романо",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.28,
+        "note": null
+      }
+    },
+    {
+      "n": 3,
+      "name": "Сельдерей стебель",
+      "unit": "кг",
+      "qty": 0.65,
+      "price_kop": 23334,
+      "sum_no_vat_kop": 15167,
+      "vat_rate": 5,
+      "vat_sum_kop": 758,
+      "sum_with_vat_kop": 15925,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "56",
+      "qr": {
+        "art": "56",
+        "name": "Сельдерей стебель",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.65,
+        "note": null
+      }
+    },
+    {
+      "n": 4,
+      "name": "Киви",
+      "unit": "кг",
+      "qty": 1.03,
+      "price_kop": 27238,
+      "sum_no_vat_kop": 28055,
+      "vat_rate": 5,
+      "vat_sum_kop": 1403,
+      "sum_with_vat_kop": 29458,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "30",
+      "qr": {
+        "art": "30",
+        "name": "Киви",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.03,
+        "note": null
+      }
+    },
+    {
+      "n": 5,
+      "name": "Апельсин",
+      "unit": "кг",
+      "qty": 0.29,
+      "price_kop": 15238,
+      "sum_no_vat_kop": 4419,
+      "vat_rate": 5,
+      "vat_sum_kop": 221,
+      "sum_with_vat_kop": 4640,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90447",
+      "qr": {
+        "art": "90447",
+        "name": "Апельсин",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.29,
+        "note": null
+      }
+    },
+    {
+      "n": 6,
+      "name": "Огурец гладкий",
+      "unit": "кг",
+      "qty": 1.29,
+      "price_kop": 26667,
+      "sum_no_vat_kop": 34400,
+      "vat_rate": 5,
+      "vat_sum_kop": 1720,
+      "sum_with_vat_kop": 36120,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "7",
+      "qr": {
+        "art": "7",
+        "name": "Огурец гладкий",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.29,
+        "note": null
+      }
+    },
+    {
+      "n": 7,
+      "name": "Петрушка",
+      "unit": "кг",
+      "qty": 0.33,
+      "price_kop": 48094,
+      "sum_no_vat_kop": 15871,
+      "vat_rate": 5,
+      "vat_sum_kop": 794,
+      "sum_with_vat_kop": 16665,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "17",
+      "qr": {
+        "art": "17",
+        "name": "Петрушка",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.33,
+        "note": null
+      }
+    },
+    {
+      "n": 8,
+      "name": "Базилик зеленый",
+      "unit": "кг",
+      "qty": 0.21,
+      "price_kop": 195238,
+      "sum_no_vat_kop": 41000,
+      "vat_rate": 5,
+      "vat_sum_kop": 2050,
+      "sum_with_vat_kop": 43050,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "16",
+      "qr": {
+        "art": "16",
+        "name": "Базилик зелёный",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.21,
+        "note": null
+      }
+    },
+    {
+      "n": 9,
+      "name": "Лук зеленый",
+      "unit": "кг",
+      "qty": 0.06,
+      "price_kop": 38567,
+      "sum_no_vat_kop": 2314,
+      "vat_rate": 5,
+      "vat_sum_kop": 116,
+      "sum_with_vat_kop": 2430,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "19",
+      "qr": {
+        "art": "19",
+        "name": "Лук зелёный",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.06,
+        "note": null
+      }
+    },
+    {
+      "n": 10,
+      "name": "Укроп",
+      "unit": "кг",
+      "qty": 0.07,
+      "price_kop": 48100,
+      "sum_no_vat_kop": 3367,
+      "vat_rate": 5,
+      "vat_sum_kop": 168,
+      "sum_with_vat_kop": 3535,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "18",
+      "qr": {
+        "art": "18",
+        "name": "Укроп",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.07,
+        "note": null
+      }
+    },
+    {
+      "n": 11,
+      "name": "Яблоко красное",
+      "unit": "кг",
+      "qty": 1.1,
+      "price_kop": 19524,
+      "sum_no_vat_kop": 21476,
+      "vat_rate": 5,
+      "vat_sum_kop": 1074,
+      "sum_with_vat_kop": 22550,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90238",
+      "qr": {
+        "art": "90238",
+        "name": "Яблоко красное",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.1,
+        "note": null
+      }
+    },
+    {
+      "n": 12,
+      "name": "Груша",
+      "unit": "кг",
+      "qty": 1.09,
+      "price_kop": 37143,
+      "sum_no_vat_kop": 40486,
+      "vat_rate": 5,
+      "vat_sum_kop": 2024,
+      "sum_with_vat_kop": 42510,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "14",
+      "qr": {
+        "art": "14",
+        "name": "Груша",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.09,
+        "note": null
+      }
+    },
+    {
+      "n": 13,
+      "name": "Картофель белый",
+      "unit": "кг",
+      "qty": 2.68,
+      "price_kop": 4762,
+      "sum_no_vat_kop": 12762,
+      "vat_rate": 5,
+      "vat_sum_kop": 638,
+      "sum_with_vat_kop": 13400,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90239",
+      "qr": {
+        "art": "90239",
+        "name": "Картофель",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 2.68,
+        "note": null
+      }
+    },
+    {
+      "n": 14,
+      "name": "Лук репчатый",
+      "unit": "кг",
+      "qty": 1.11,
+      "price_kop": 7523,
+      "sum_no_vat_kop": 8351,
+      "vat_rate": 5,
+      "vat_sum_kop": 418,
+      "sum_with_vat_kop": 8769,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "20",
+      "qr": {
+        "art": "20",
+        "name": "Лук репчатый",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.11,
+        "note": null
+      }
+    },
+    {
+      "n": 15,
+      "name": "Капуста",
+      "unit": "кг",
+      "qty": 2.46,
+      "price_kop": 6191,
+      "sum_no_vat_kop": 15229,
+      "vat_rate": 5,
+      "vat_sum_kop": 761,
+      "sum_with_vat_kop": 15990,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "54",
+      "qr": {
+        "art": "54",
+        "name": "Капуста белокачанная",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 2.46,
+        "note": null
+      }
+    },
+    {
+      "n": 16,
+      "name": "Шампиньон",
+      "unit": "кг",
+      "qty": 0.61,
+      "price_kop": 37143,
+      "sum_no_vat_kop": 22657,
+      "vat_rate": 5,
+      "vat_sum_kop": 1133,
+      "sum_with_vat_kop": 23790,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90369",
+      "qr": {
+        "art": "90369",
+        "name": "Шампиньоны",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.61,
+        "note": null
+      }
+    },
+    {
+      "n": 17,
+      "name": "Вешенка",
+      "unit": "кг",
+      "qty": 0.56,
+      "price_kop": 81714,
+      "sum_no_vat_kop": 45760,
+      "vat_rate": 5,
+      "vat_sum_kop": 2288,
+      "sum_with_vat_kop": 48048,
+      "confidence": "high",
+      "note": null,
+      "qr_nomenclature_match": "90446",
+      "qr": {
+        "art": "90446",
+        "name": "Вешенка",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 0.56,
+        "note": null
+      }
+    }
+  ],
+  "totals": {
+    "sum_no_vat_kop": 448633,
+    "vat_sum_kop": 22432,
+    "sum_with_vat_kop": 471065,
+    "lines": 17,
+    "amount_words": "Четыре тысячи семьсот десять рублей 65 копеек"
+  },
+  "extraction_flags": [
+    "Все 17 строк разобраны, арифметика сверена (4486.33 / 224.32 / 4710.65).",
+    "Цена в документе — без НДС (цена×кол-во = стоимость без налога), ставка 5% по всем.",
+    "Капуста → Капуста белокочанная (54); Картофель белый → Картофель (90239, переименован шефом).",
+    "Апельсин (90447) и Вешенка (90446) заведены в QR под эту накладную."
+  ]
+}
