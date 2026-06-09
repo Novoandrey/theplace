@@ -182,7 +182,9 @@ def cmd_post(args):
     date = args.date
     if not date:
         d = extracted.get("document", {}).get("date")
-        date = f"{d}T09:00:00.000Z" if d else None
+        # Время документа — 09:00 по Екатеринбургу (UTC+5) → 04:00Z. QR показывает в поясе кафе,
+        # поэтому фиксируем локальные 09:00 (иначе 09:00Z отображались как 14:00). Переопределяется --date.
+        date = f"{d}T04:00:00.000Z" if d else None
 
     ok, dup_id = check_existing(layer, login, password, number)
     if dup_id is not None and not args.allow_duplicate:
