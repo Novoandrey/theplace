@@ -1,0 +1,152 @@
+{
+  "schema_version": "0.1",
+  "money_unit": "kopeck",
+  "currency": "RUB",
+  "source": {
+    "files": [
+      "1781007668700_image.png"
+    ],
+    "doc_type": "УПД",
+    "status": "1"
+  },
+  "document": {
+    "number": "КН-2073",
+    "date": "2026-06-04",
+    "basis": null
+  },
+  "supplier": {
+    "name": "ИП Некрасов Роман Борисович",
+    "inn": "720317740020",
+    "provider_id": null,
+    "provider_class": "businessman"
+  },
+  "consignee": {
+    "name": "ИП Антропов Александр Владимирович",
+    "inn": "665204044899"
+  },
+  "items": [
+    {
+      "n": 1,
+      "name": "Руанда Бахо под эспрессо в зернах 1кг",
+      "unit": "шт",
+      "qty": 5,
+      "price_kop": 142787,
+      "sum_no_vat_kop": 713934,
+      "vat_rate": 22,
+      "vat_sum_kop": 157066,
+      "sum_with_vat_kop": 871000,
+      "confidence": "high",
+      "note": "в кг: 5×1кг",
+      "qr_nomenclature_match": "103",
+      "qr": {
+        "art": "103",
+        "name": "Кофе для эспрессо",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 5.0,
+        "note": "5×1кг"
+      }
+    },
+    {
+      "n": 2,
+      "name": "Руанда Бахо под фильтр в зернах 500гр",
+      "unit": "шт",
+      "qty": 2,
+      "price_kop": 153443,
+      "sum_no_vat_kop": 153443,
+      "vat_rate": 22,
+      "vat_sum_kop": 33757,
+      "sum_with_vat_kop": 187200,
+      "confidence": "high",
+      "note": "в кг: 2×500г",
+      "qr_nomenclature_match": "90034",
+      "qr": {
+        "art": "90034",
+        "name": "Кофе для фильтра",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.0,
+        "note": "2×500г"
+      }
+    },
+    {
+      "n": 3,
+      "name": "Кения Корокоро в зернах 500гр",
+      "unit": "шт",
+      "qty": 2,
+      "price_kop": 152377,
+      "sum_no_vat_kop": 152377,
+      "vat_rate": 22,
+      "vat_sum_kop": 33523,
+      "sum_with_vat_kop": 185900,
+      "confidence": "high",
+      "note": "в кг: 2×500г",
+      "qr_nomenclature_match": "90034",
+      "qr": {
+        "art": "90034",
+        "name": "Кофе для фильтра",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.0,
+        "note": "2×500г"
+      }
+    },
+    {
+      "n": 4,
+      "name": "Эфиопия Адола в зернах 500гр",
+      "unit": "шт",
+      "qty": 2,
+      "price_kop": 201393,
+      "sum_no_vat_kop": 201393,
+      "vat_rate": 22,
+      "vat_sum_kop": 44307,
+      "sum_with_vat_kop": 245700,
+      "confidence": "high",
+      "note": "в кг: 2×500г",
+      "qr_nomenclature_match": "90034",
+      "qr": {
+        "art": "90034",
+        "name": "Кофе для фильтра",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.0,
+        "note": "2×500г"
+      }
+    },
+    {
+      "n": 5,
+      "name": "Эфиопия Алета Вондо в зернах 200гр",
+      "unit": "шт",
+      "qty": 5,
+      "price_kop": 211516,
+      "sum_no_vat_kop": 211516,
+      "vat_rate": 22,
+      "vat_sum_kop": 46534,
+      "sum_with_vat_kop": 258050,
+      "confidence": "high",
+      "note": "в кг: 5×200г",
+      "qr_nomenclature_match": "90034",
+      "qr": {
+        "art": "90034",
+        "name": "Кофе для фильтра",
+        "type": "Ингредиент",
+        "unit": "кг",
+        "qty": 1.0,
+        "note": "5×200г"
+      }
+    }
+  ],
+  "totals": {
+    "sum_no_vat_kop": 1432663,
+    "vat_sum_kop": 315187,
+    "sum_with_vat_kop": 1747850,
+    "lines": 5,
+    "note": "итоги по товарам, БЕЗ доставки"
+  },
+  "extraction_flags": [
+    "5 товарных строк (кофе), ставка 22%, пачки пересчитаны в кг.",
+    "Эспрессо → Кофе для эспрессо (103); под фильтр/в зернах → Кофе для фильтра (90034), строки раздельные.",
+    "ДОСТАВКА 689.50 (с НДС) / 565.16 (без НДС) В НАКЛАДНУЮ НЕ ВКЛЮЧЕНА — вводится вручную в QR.",
+    "Итог товаров 17478.50; с доставкой по документу 18168.00."
+  ]
+}
